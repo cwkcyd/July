@@ -1,4 +1,5 @@
-﻿using July.Ioc;
+﻿using July.Configuration;
+using July.Ioc;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,25 +12,25 @@ namespace July.Bootstrap
 {
     public abstract class ApplicationBase
     {
-        protected ApplicationOptions Options { get; private set; }
+        protected IStartupConfiguration StartupConfiguration { get; private set; }
 
         protected abstract Type StartupModule { get; }
 
-        public ApplicationBase(ApplicationOptions options)
+        public ApplicationBase(IStartupConfiguration startupConfiguration)
         {
-            Options = options ?? throw new ArgumentNullException(nameof(options));
+            StartupConfiguration = startupConfiguration ?? throw new ArgumentNullException(nameof(startupConfiguration));
         }
 
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
             var builder = IocBuilder.New(services, StartupModule);
 
-            Register(services);
+            Register(builder);
 
             return builder.Build();
         }
 
-        public virtual void Register(IServiceCollection services)
+        public virtual void Register(IocBuilder builder)
         {
 
         }

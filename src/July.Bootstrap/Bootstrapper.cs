@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Threading;
 using Microsoft.AspNetCore;
 using Microsoft.Extensions.DependencyInjection;
+using July.Configuration;
 
 namespace July.Bootstrap
 {
@@ -44,7 +45,7 @@ namespace July.Bootstrap
 
         private void RegisterStartupServices(IServiceCollection services)
         {
-            services.AddSingleton<ApplicationOptions>();
+            services.AddSingleton<IStartupConfiguration ,JulyStartupConfiguration>();
         }
     }
 }

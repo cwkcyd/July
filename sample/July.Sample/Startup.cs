@@ -8,13 +8,15 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using July.Bootstrap;
 using Microsoft.AspNetCore.Hosting;
+using July.Ioc;
+using July.Configuration;
 
 namespace July.Sample
 {
     public class Startup : ApplicationBase
     {
-        public Startup(ApplicationOptions options)
-            : base(options)
+        public Startup(IStartupConfiguration startupConfiguration)
+            : base(startupConfiguration)
         {
 
         }
@@ -22,16 +24,16 @@ namespace July.Sample
         protected override Type StartupModule => typeof(Startup);
 
         // This method gets called by the runtime. Use this method to add services to the container.
-        public override void Register(IServiceCollection services)
+        public override void Register(IocBuilder builder)
         {
-            services.AddMvc();
+            builder.AddMvc();
         }
 
         protected override void Run(IApplicationBuilder app)
         {
             base.Run(app);
 
-            if (Options.HostingEnvironment.IsDevelopment())
+            if (StartupConfiguration.HostingEnvironment.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
                 app.UseBrowserLink();
