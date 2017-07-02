@@ -7,6 +7,8 @@ namespace July.Ioc
 {
     public interface IIocContainer
     {
-        T Resolve<T>();
+        object Resolve(Type type);
+
+        bool IsRegistered(Type type);
     }
 }

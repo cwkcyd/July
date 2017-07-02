@@ -60,9 +60,14 @@ namespace July.Ioc
 
         #region IIocContainer
 
-        public T Resolve<T>()
+        public object Resolve(Type type)
         {
-            return (T)GetService(typeof(T));
+            return GetService(type);
+        }
+
+        public bool IsRegistered(Type type)
+        {
+            return ComponentContext.IsRegistered(type);
         }
 
         #endregion

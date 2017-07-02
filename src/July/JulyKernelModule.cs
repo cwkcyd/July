@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using July.Ioc;
+using Autofac;
+using July.Events;
 
 namespace July
 {
@@ -11,6 +13,8 @@ namespace July
         public override void Initialize(IocBuilder builder)
         {
             base.Initialize(builder);
+
+            builder.RegisterType<EventBus>().As<IEventBus>().SingleInstance();
         }
 
         public override void Load(IIocContainer container)
