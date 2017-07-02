@@ -5,8 +5,8 @@ using System.Text;
 
 namespace July.Ioc
 {
-    public interface IIocContainer : IServiceProvider, ISupportRequiredService
+    public interface IIocContainer
     {
-
+        T Resolve<T>();
     }
 }

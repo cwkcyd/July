@@ -2,10 +2,12 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Autofac.Core;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace July.Ioc
 {
-    public class IocContainer : IIocContainer, IStartable
+    public class IocContainer : IIocContainer, IStartable, IServiceProvider, ISupportRequiredService
     {
         private static IIocContainer _instance;
 
@@ -29,19 +31,40 @@ namespace July.Ioc
             ComponentContext = componentContext ?? throw new ArgumentNullException(nameof(componentContext));
         }
 
+        #region IServiceProivder
+
         public object GetService(Type serviceType)
         {
             return ComponentContext.ResolveOptional(serviceType);
         }
+
+        #endregion
+
+        #region ISupportRequiredService
 
         public object GetRequiredService(Type serviceType)
         {
             return ComponentContext.Resolve(serviceType);
         }
 
+        #endregion
+
+        #region IStartable
+
         public void Start()
         {
             _instance = this;
         }
+
+        #endregion
+
+        #region IIocContainer
+
+        public T Resolve<T>()
+        {
+            return (T)GetService(typeof(T));
+        }
+
+        #endregion
     }
 }

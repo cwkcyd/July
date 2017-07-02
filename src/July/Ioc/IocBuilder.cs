@@ -95,7 +95,7 @@ namespace July.Ioc
 
             var container = ContainerBuilder.Build();
 
-            return container.Resolve<IIocContainer>();
+            return container.Resolve<IocContainer>();
         }
     }
 }
