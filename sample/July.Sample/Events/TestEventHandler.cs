@@ -1,4 +1,5 @@
 ﻿using July.Events;
+using July.Ioc;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace July.Sample.Events
 {
-    public class TestEventHandler : IEventHandler<TestEventData>
+    public class TestEventHandler : IEventHandler<TestEventData>, ILifetimeEvents
     {
         public ILogger<TestEventHandler> Logger { get; set; }
 
@@ -19,6 +20,21 @@ namespace July.Sample.Events
         public void Handle(TestEventData eventData)
         {
             Logger.LogWarning("Handle event");
+        }
+
+        public void OnActivating()
+        {
+            Logger.LogWarning("Activating");
+        }
+
+        public void OnActivated()
+        {
+            Logger.LogWarning("Activated");
+        }
+
+        public void OnRelease()
+        {
+            Logger.LogWarning("Released");
         }
     }
 }

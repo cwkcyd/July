@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Autofac;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -10,5 +11,7 @@ namespace July.Ioc
         object Resolve(Type type);
 
         bool IsRegistered(Type type);
+
+        ILifetimeScope BeginLifetimeScope(Action<ContainerBuilder> builderAction = null);
     }
 }

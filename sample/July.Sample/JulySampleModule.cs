@@ -19,7 +19,7 @@ namespace July.Sample
 
             builder.AddMvc();
 
-            builder.RegisterType<TestEventHandler>().PropertiesAutowired().AsSelf();
+            builder.RegisterAssemblyByConvention(ThisAssembly);
         }
 
         public override void Load(IIocContainer container)

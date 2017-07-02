@@ -1,4 +1,5 @@
-﻿using July.Ioc;
+﻿using Autofac;
+using July.Ioc;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -22,11 +23,14 @@ namespace July.Events
         {
             if (HandlerMapping.TryGetValue(typeof(TEventData), out var handlers))
             {
-                foreach (var handlerType in handlers)
+                using (ILifetimeScope scope = IocContainer.BeginLifetimeScope())
                 {
-                    IEventHandler<TEventData> handler = (IEventHandler<TEventData>)IocContainer.Resolve(handlerType);
+                    foreach (var handlerType in handlers)
+                    {
+                        IEventHandler<TEventData> handler = (IEventHandler<TEventData>)scope.ResolveOptional(handlerType);
 
-                    handler.Handle(eventData);
+                        handler.Handle(eventData);
+                    }
                 }
             }
         }

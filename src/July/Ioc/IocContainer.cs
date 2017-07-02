@@ -24,18 +24,18 @@ namespace July.Ioc
             }
         }
 
-        private IComponentContext ComponentContext { get; set; }
+        private ILifetimeScope LifetimeScope { get; set; }
 
-        public IocContainer(IComponentContext componentContext)
+        public IocContainer(ILifetimeScope lifetimeScope)
         {
-            ComponentContext = componentContext ?? throw new ArgumentNullException(nameof(componentContext));
+            LifetimeScope = lifetimeScope ?? throw new ArgumentNullException(nameof(lifetimeScope));
         }
 
         #region IServiceProivder
 
         public object GetService(Type serviceType)
         {
-            return ComponentContext.ResolveOptional(serviceType);
+            return LifetimeScope.ResolveOptional(serviceType);
         }
 
         #endregion
@@ -44,7 +44,7 @@ namespace July.Ioc
 
         public object GetRequiredService(Type serviceType)
         {
-            return ComponentContext.Resolve(serviceType);
+            return LifetimeScope.Resolve(serviceType);
         }
 
         #endregion
@@ -67,7 +67,19 @@ namespace July.Ioc
 
         public bool IsRegistered(Type type)
         {
-            return ComponentContext.IsRegistered(type);
+            return LifetimeScope.IsRegistered(type);
+        }
+
+        public ILifetimeScope BeginLifetimeScope(Action<ContainerBuilder> builderAction)
+        {
+            if (builderAction != null)
+            {
+                return LifetimeScope.BeginLifetimeScope(builderAction);
+            }
+            else
+            {
+                return LifetimeScope.BeginLifetimeScope();
+            }
         }
 
         #endregion

@@ -22,10 +22,6 @@ namespace July.Sample.Controllers
 
         public IActionResult Index()
         {
-            EventBus.Publish<TestEventData>(new TestEventData());
-
-
-
             return Content("Hello world");
         }
     }
