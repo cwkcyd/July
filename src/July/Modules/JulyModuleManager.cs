@@ -46,7 +46,11 @@ namespace July.Modules
 
             foreach (var module in sortedModules)
             {
+                Logger.LogDebug($"Module: {module.Type.AssemblyQualifiedName} initializeing");
+
                 module.Instance.Initialize(iocBuilder);
+
+                Logger.LogDebug($"Module: {module.Type.AssemblyQualifiedName} initialized");
             }
         }
 
@@ -56,17 +60,21 @@ namespace July.Modules
 
             foreach (var module in sortedModules)
             {
+                Logger.LogDebug($"Module: {module.Type.AssemblyQualifiedName} loading");
+
                 module.Instance.Load(iocContainer);
+
+                Logger.LogDebug($"Module: {module.Type.AssemblyQualifiedName} loaded");
             }
         }
 
         private void LoadAllModules(IocBuilder iocBuilder, IStartupConfiguration startupConfiguration)
         {
-            Logger.LogDebug("Loading Abp modules...");
+            Logger.LogDebug("Loading modules...");
             
             var moduleTypes = FindAllModuleTypes().Distinct().ToList();
 
-            Logger.LogDebug("Found " + moduleTypes.Count + " ABP modules in total.");
+            Logger.LogDebug("Found " + moduleTypes.Count + " modules in total.");
             
             CreateModules(iocBuilder, startupConfiguration, moduleTypes);
 
@@ -109,7 +117,7 @@ namespace July.Modules
 
                 iocBuilder.RegisterInstance(moduleObject).AsSelf().SingleInstance();
 
-                Logger.LogDebug("Loaded module: " + moduleType.AssemblyQualifiedName);
+                Logger.LogDebug("Create module instance: " + moduleType.AssemblyQualifiedName);
             }
         }
 
