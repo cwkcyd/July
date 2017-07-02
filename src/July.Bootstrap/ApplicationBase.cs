@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using July.Ioc;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -19,7 +20,16 @@ namespace July.Bootstrap
             Options = options ?? throw new ArgumentNullException(nameof(options));
         }
 
-        public virtual void ConfigureServices(IServiceCollection services)
+        public IServiceProvider ConfigureServices(IServiceCollection services)
+        {
+            var builder = IocBuilder.New(services, StartupModule);
+
+            Register(services);
+
+            return builder.Build();
+        }
+
+        public virtual void Register(IServiceCollection services)
         {
 
         }
