@@ -5,10 +5,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using July.Ioc;
 using Microsoft.Extensions.DependencyInjection;
+using Autofac;
+using July.Sample.Events;
+using July.Events;
 
 namespace July.Sample
 {
-    [DependOn(typeof(JulySample2Module))]
     public class JulySampleModule : JulyModule
     {
         public override void Initialize(IocBuilder builder)
@@ -16,14 +18,15 @@ namespace July.Sample
             base.Initialize(builder);
 
             builder.AddMvc();
-        }
-    }
 
-    public class JulySample2Module : JulyModule
-    {
-        public override void Initialize(IocBuilder builder)
+            builder.RegisterType<TestEventHandler>().PropertiesAutowired().AsSelf();
+        }
+
+        public override void Load(IIocContainer container)
         {
-            base.Initialize(builder);
+            base.Load(container);
+
+            container.Resolve<IEventBus>().Subscribe<TestEventData, TestEventHandler>();
         }
     }
 }

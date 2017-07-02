@@ -6,14 +6,25 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using July.Events;
+using July.Sample.Events;
 
 namespace July.Sample.Controllers
 {
     public class HomeController : Controller
     {
+        private IEventBus EventBus { get; set; }
+
+        public HomeController(IEventBus eventBus)
+        {
+            EventBus = eventBus;
+        }
+
         public IActionResult Index()
         {
-            HttpContext.RequestServices.GetService<ILogger<HomeController>>().LogError("hehehe");
+            EventBus.Publish<TestEventData>(new TestEventData());
+
+
 
             return Content("Hello world");
         }
