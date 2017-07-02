@@ -15,6 +15,8 @@ namespace July.Modules
     {
         protected internal IStartupConfiguration Configuration { get; internal set; }
 
+        protected Assembly ThisAssembly => this.GetType().GetTypeInfo().Assembly;
+
         public virtual void Initialize(IocBuilder builder)
         {
 
