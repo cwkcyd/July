@@ -78,22 +78,19 @@ namespace July.Ioc
         
         private IServiceCollection ServiceCollection { get; set; }
 
-        public ContainerBuilder ContainerBuilder { get; private set; }
-
         private IocBuilder(IServiceCollection services)
         {
             ServiceCollection = services ?? throw new ArgumentNullException(nameof(services));
-            ContainerBuilder = new ContainerBuilder();
         }
 
         public IServiceProvider Build()
         {
-            ContainerBuilder.RegisterType<IocContainer>().AsSelf().As<IIocContainer>().As<IServiceProvider>().SingleInstance();
-            ContainerBuilder.RegisterType<AutofacServiceScopeFactory>().As<IServiceScopeFactory>();
+            this.RegisterType<IocContainer>().AsSelf().As<IIocContainer>().As<IServiceProvider>().SingleInstance();
+            this.RegisterType<AutofacServiceScopeFactory>().As<IServiceScopeFactory>();
 
-            ContainerBuilder.Populate(ServiceCollection);
+            this.Populate(ServiceCollection);
 
-            var container = ContainerBuilder.Build();
+            var container = base.Build();
 
             return container.Resolve<IocContainer>();
         }

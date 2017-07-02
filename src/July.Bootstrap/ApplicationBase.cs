@@ -1,5 +1,6 @@
 ﻿using July.Configuration;
 using July.Ioc;
+using July.Modules;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,18 +26,18 @@ namespace July.Bootstrap
         {
             var builder = IocBuilder.New(services, StartupModule);
 
-            Register(builder);
+            new JulyModuleManager(StartupModule).Initialize(builder, StartupConfiguration);
 
             return builder.Build();
         }
 
-        public virtual void Register(IocBuilder builder)
-        {
-
-        }
-
         public void Configure(IApplicationBuilder app)
         {
+            var manager = app.ApplicationServices.GetService<JulyModuleManager>();
+            var iocContainer = app.ApplicationServices.GetService<IIocContainer>();
+
+            manager.Load(iocContainer);
+
             Run(app);
         }
 

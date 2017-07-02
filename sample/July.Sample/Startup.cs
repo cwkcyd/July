@@ -21,13 +21,7 @@ namespace July.Sample
 
         }
 
-        protected override Type StartupModule => typeof(Startup);
-
-        // This method gets called by the runtime. Use this method to add services to the container.
-        public override void Register(IocBuilder builder)
-        {
-            builder.AddMvc();
-        }
+        protected override Type StartupModule => typeof(JulySampleModule);
 
         protected override void Run(IApplicationBuilder app)
         {
