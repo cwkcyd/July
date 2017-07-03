@@ -18,8 +18,6 @@ namespace July.Sample
             base.Initialize(builder);
 
             builder.AddMvc();
-
-            builder.RegisterAssemblyByConvention(ThisAssembly);
         }
 
         public override void Load(IIocContainer container)

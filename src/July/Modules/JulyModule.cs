@@ -19,7 +19,7 @@ namespace July.Modules
 
         public virtual void Initialize(IocBuilder builder)
         {
-
+            builder.RegisterAssemblyByConvention(ThisAssembly);
         }
 
         public virtual void Load(IIocContainer container)
