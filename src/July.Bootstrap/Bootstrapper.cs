@@ -12,7 +12,7 @@ using Microsoft.Extensions.Logging;
 namespace July.Bootstrap
 {
     public sealed class Bootstrapper<TApplication> : IBootstraper<TApplication>
-        where TApplication : class, IApplication
+        where TApplication : Application
     {
         private IWebHostBuilder WebHostBuilder { get; set; }
 

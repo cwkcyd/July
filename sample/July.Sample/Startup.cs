@@ -13,7 +13,7 @@ using July.Configuration;
 
 namespace July.Sample
 {
-    public class Startup : JulyApplication
+    public class Startup : Application
     {
         public Startup(IStartupConfiguration startupConfiguration)
             : base(startupConfiguration)

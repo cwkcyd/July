@@ -7,18 +7,18 @@ using System;
 
 namespace July
 {
-    public abstract class JulyApplication : IApplication
+    public abstract class Application
     {
         protected IStartupConfiguration StartupConfiguration { get; private set; }
 
         public abstract Type StartupModule { get; }
 
-        public JulyApplication(IStartupConfiguration startupConfiguration)
+        public Application(IStartupConfiguration startupConfiguration)
         {
             StartupConfiguration = startupConfiguration ?? throw new ArgumentNullException(nameof(startupConfiguration));
         }
 
-        public JulyApplication()
+        public Application()
         {
 
         }
