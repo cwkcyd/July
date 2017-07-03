@@ -18,6 +18,12 @@ namespace July.Ioc
 
         public bool AutoActivate { get; set; } = false;
 
+        public bool EnableClassInterceptors { get; set; } = false;
+
+        public bool EnableInterfaceInterceptors { get; set; } = false;
+
+        public Type[] InterceptorBy { get; set; }
+
         public ComponentAttribute(ServiceLifetime lifetime)
         {
             Lifetime = lifetime;

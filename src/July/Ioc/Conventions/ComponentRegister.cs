@@ -6,6 +6,8 @@ using System.Reflection;
 using System.Linq;
 using Autofac;
 using Microsoft.Extensions.DependencyInjection;
+using Autofac.Extras.DynamicProxy;
+using July.Extensions;
 
 namespace July.Ioc.Conventions
 {
@@ -35,6 +37,19 @@ namespace July.Ioc.Conventions
                     registration = registration.AutoActivate();
                 }
 
+                if (attribute.EnableClassInterceptors)
+                {
+                    registration = registration.EnableClassInterceptors();
+                }
+                if (attribute.EnableInterfaceInterceptors)
+                {
+                    registration = registration.EnableInterfaceInterceptors();
+                }
+                if (!attribute.InterceptorBy.IsNullOrEmpty())
+                {
+                    registration = registration.InterceptedBy(attribute.InterceptorBy);
+                }
+
                 if (attribute.Lifetime == ServiceLifetime.Scoped)
                 {
                     registration = registration.InstancePerLifetimeScope();
@@ -46,7 +61,7 @@ namespace July.Ioc.Conventions
                 else
                 {
                     registration = registration.InstancePerDependency();
-                }
+                }                
             }
 
             return registration;
