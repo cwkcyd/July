@@ -6,15 +6,10 @@ namespace July.Events
 {
     public interface IEventBus
     {
-        void Subscribe<TEventData, TEventHandler>()
-            where TEventData : IEventData
-            where TEventHandler : IEventHandler<TEventData>;
+        void Subscribe(Type eventDataType, Type eventHandlerType);
 
-        void UbSubscribe<TEventData, TEventHandler>()
-            where TEventData : IEventData
-            where TEventHandler : IEventHandler<TEventData>;
+        void Unsubscribe(Type eventDataType, Type eventHandlerType);
 
-        void Publish<TEventData>(TEventData eventData)
-            where TEventData : IEventData;
+        void Publish<TEvent>(TEvent eventData);
     }
 }

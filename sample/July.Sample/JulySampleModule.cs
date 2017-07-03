@@ -26,7 +26,7 @@ namespace July.Sample
         {
             base.Load(container);
 
-            container.Resolve<IEventBus>().Subscribe<TestEventData, TestEventHandler>();
+            container.Resolve<IEventBus>().Subscribe(typeof(TestEventData), typeof(TestEventHandler));
         }
     }
 }

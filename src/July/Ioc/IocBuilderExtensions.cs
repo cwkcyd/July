@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Text;
 using System.Linq;
 using Autofac;
+using Autofac.Builder;
 
 namespace July.Ioc
 {

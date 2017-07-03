@@ -6,21 +6,17 @@ namespace July.Events
 {
     public class NullEventBus : IEventBus
     {
-        public void Publish<TEventData>(TEventData eventData) where TEventData : IEventData
+        public void Publish<TEventData>(TEventData eventData) 
         {
 
         }
 
-        public void Subscribe<TEventData, TEventHandler>()
-            where TEventData : IEventData
-            where TEventHandler : IEventHandler<TEventData>
+        public void Subscribe(Type eventDataType, Type eventHandlerType)
         {
 
         }
 
-        public void UbSubscribe<TEventData, TEventHandler>()
-            where TEventData : IEventData
-            where TEventHandler : IEventHandler<TEventData>
+        public void Unsubscribe(Type eventDataType, Type eventHandlerType)
         {
 
         }
