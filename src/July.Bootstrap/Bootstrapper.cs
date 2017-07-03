@@ -7,6 +7,7 @@ using System.Threading;
 using Microsoft.AspNetCore;
 using Microsoft.Extensions.DependencyInjection;
 using July.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace July.Bootstrap
 {

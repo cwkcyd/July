@@ -15,14 +15,18 @@ namespace July.Sample.Controllers
     {
         private IEventBus EventBus { get; set; }
 
-        public HomeController(IEventBus eventBus)
+        private ILogger Logger { get; set; }
+
+        public HomeController(IEventBus eventBus, ILogger<HomeController> logger)
         {
             EventBus = eventBus;
+            Logger = logger;
         }
 
         public IActionResult Index()
         {
             EventBus.Publish(new TestEventData());
+            Logger.LogInformation("Request");
             return Content("Hello world");
         }
     }

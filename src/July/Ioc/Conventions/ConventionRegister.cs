@@ -11,6 +11,7 @@ namespace July.Ioc.Conventions
         {
             Add(new ComponentRegister());
             Add(new LifetimeEventsRegister());
+            Add(new AspectRegister());
         }
 
         public IRegistrationBuilder<object, ConcreteReflectionActivatorData, SingleRegistrationStyle> Register(IRegistrationBuilder<object, ConcreteReflectionActivatorData, SingleRegistrationStyle> registration, Type type)
