@@ -1,19 +1,17 @@
 ﻿using July.Events;
 using July.Ioc;
 using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace July.Sample.Events
-{    
+{
     public class TestEventHandler : JulyEventHandler<TestEventData>, ILifetimeEvents
     {
         public ILogger<TestEventHandler> Logger { get; set; }
 
         public TestEventHandler()
         {
-            //Logger.LogWarning("Handler created");
+            Logger = NullLogger<TestEventHandler>.Instance;
         }
 
         public override void Handle(TestEventData eventData)
