@@ -14,40 +14,36 @@ namespace July.Ioc.Conventions
     {
         public IRegistrationBuilder<object, ConcreteReflectionActivatorData, SingleRegistrationStyle> Register(IRegistrationBuilder<object, ConcreteReflectionActivatorData, SingleRegistrationStyle> registration, Type type)
         {
-            var componentAttributes = type.GetTypeInfo().GetCustomAttributes<ComponentAttribute>();
-            if (componentAttributes.Any())
+            ComponentAttribute attribute = type.GetFirstAttribute<ComponentAttribute>(true);
+
+            if (attribute.AsSelf)
             {
-                ComponentAttribute attribute = componentAttributes.First();
+                registration = registration.AsSelf();
+            }
+            if (attribute.AsImplementedInterfaces)
+            {
+                registration = registration.AsImplementedInterfaces();
+            }
+            if (attribute.PropertyAutoWired)
+            {
+                registration = registration.PropertiesAutowired();
+            }
+            if (attribute.AutoActivate)
+            {
+                registration = registration.AutoActivate();
+            }
 
-                if (attribute.AsSelf)
-                {
-                    registration = registration.AsSelf();
-                }
-                if (attribute.AsImplementedInterfaces)
-                {
-                    registration = registration.AsImplementedInterfaces();
-                }
-                if (attribute.PropertyAutoWired)
-                {
-                    registration = registration.PropertiesAutowired();
-                }
-                if (attribute.AutoActivate)
-                {
-                    registration = registration.AutoActivate();
-                }
-
-                if (attribute.Lifetime == ServiceLifetime.Scoped)
-                {
-                    registration = registration.InstancePerLifetimeScope();
-                }
-                else if (attribute.Lifetime == ServiceLifetime.Singleton)
-                {
-                    registration = registration.SingleInstance();
-                }
-                else
-                {
-                    registration = registration.InstancePerDependency();
-                }                
+            if (attribute.Lifetime == ServiceLifetime.Scoped)
+            {
+                registration = registration.InstancePerLifetimeScope();
+            }
+            else if (attribute.Lifetime == ServiceLifetime.Singleton)
+            {
+                registration = registration.SingleInstance();
+            }
+            else
+            {
+                registration = registration.InstancePerDependency();
             }
 
             return registration;

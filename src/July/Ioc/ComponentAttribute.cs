@@ -5,7 +5,7 @@ using System.Text;
 
 namespace July.Ioc
 {
-    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = true)]
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface, AllowMultiple = false, Inherited = true)]
     public class ComponentAttribute : Attribute
     {
         public ServiceLifetime Lifetime { get; private set; }

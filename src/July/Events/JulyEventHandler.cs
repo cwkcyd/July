@@ -5,7 +5,6 @@ using System.Text;
 
 namespace July.Events
 {
-    [Transient]
     public abstract class JulyEventHandler<TEventData> : IEventHandler<TEventData>
     {
         public abstract void Handle(TEventData eventData);

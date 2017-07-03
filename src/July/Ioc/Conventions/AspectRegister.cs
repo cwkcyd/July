@@ -19,8 +19,7 @@ namespace July.Ioc.Conventions
     {
         public IRegistrationBuilder<object, ConcreteReflectionActivatorData, SingleRegistrationStyle> Register(IRegistrationBuilder<object, ConcreteReflectionActivatorData, SingleRegistrationStyle> registration, Type type)
         {
-            var attribute = type.GetTypeInfo().GetCustomAttribute<InterceptAttribute>();
-
+            var attribute = type.GetFirstAttribute<InterceptAttribute>();
             if (attribute == null)
             {
                 return registration;

@@ -7,6 +7,7 @@ using Autofac;
 using Autofac.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using July.Ioc.Conventions;
+using July.Extensions;
 
 namespace July.Ioc
 {
@@ -33,8 +34,8 @@ namespace July.Ioc
                 return;
             }
 
-            var componentAttributes = type.GetCustomAttributes<ComponentAttribute>();
-            if (!componentAttributes.Any())
+            var componentAttribute = type.AsType().GetFirstAttribute<ComponentAttribute>();
+            if (componentAttribute == null)
             {
                 return;
             }
