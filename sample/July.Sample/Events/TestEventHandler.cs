@@ -2,9 +2,11 @@
 using July.Ioc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using System;
 
 namespace July.Sample.Events
 {
+    [Transient(EnableClassInterceptors = true, InterceptorBy = new Type[] { typeof(TestInterceptor) })]
     public class TestEventHandler : JulyEventHandler<TestEventData>, ILifetimeEvents
     {
         public ILogger<TestEventHandler> Logger { get; set; }
