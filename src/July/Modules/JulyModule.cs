@@ -26,6 +26,11 @@ namespace July.Modules
         {
             
         }
+
+        public void Shutdown()
+        {
+
+        }
         
         public static bool IsJulyModule(Type type)
         {

@@ -39,20 +39,6 @@ namespace July.Modules
 
             InitializeModules(iocBuilder);
         }
-        
-        private void InitializeModules(IocBuilder iocBuilder)
-        {
-            var sortedModules = _moduleList.GetSortedModuleListByDependency();
-
-            foreach (var module in sortedModules)
-            {
-                Logger.LogDebug($"Module: {module.Type.AssemblyQualifiedName} initializeing");
-
-                module.Instance.Initialize(iocBuilder);
-
-                Logger.LogDebug($"Module: {module.Type.AssemblyQualifiedName} initialized");
-            }
-        }
 
         public void Load(IIocContainer iocContainer)
         {
@@ -65,6 +51,32 @@ namespace July.Modules
                 module.Instance.Load(iocContainer);
 
                 Logger.LogDebug($"Module: {module.Type.AssemblyQualifiedName} loaded");
+            }
+        }
+
+        public void Shutdown()
+        {
+            var sortedModules = _moduleList.GetSortedModuleListByDependency().Reverse<JulyModuleInfo>();
+
+            foreach (var module in sortedModules)
+            {
+                Logger.LogDebug($"Module: {module.Type.AssemblyQualifiedName} shutdown");
+
+                module.Instance.Shutdown();
+            }
+        }
+
+        private void InitializeModules(IocBuilder iocBuilder)
+        {
+            var sortedModules = _moduleList.GetSortedModuleListByDependency();
+
+            foreach (var module in sortedModules)
+            {
+                Logger.LogDebug($"Module: {module.Type.AssemblyQualifiedName} initializeing");
+
+                module.Instance.Initialize(iocBuilder);
+
+                Logger.LogDebug($"Module: {module.Type.AssemblyQualifiedName} initialized");
             }
         }
 

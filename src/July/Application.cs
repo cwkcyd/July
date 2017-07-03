@@ -2,6 +2,7 @@
 using July.Ioc;
 using July.Modules;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 
@@ -16,11 +17,6 @@ namespace July
         public Application(IStartupConfiguration startupConfiguration)
         {
             StartupConfiguration = startupConfiguration ?? throw new ArgumentNullException(nameof(startupConfiguration));
-        }
-
-        public Application()
-        {
-
         }
 
         public IServiceProvider ConfigureServices(IServiceCollection services)
@@ -38,6 +34,9 @@ namespace July
             var iocContainer = app.ApplicationServices.GetService<IIocContainer>();
 
             manager.Load(iocContainer);
+
+            //Register shutdown events
+            app.ApplicationServices.GetService<IApplicationLifetime>().ApplicationStopping.Register(manager.Shutdown);
 
             Run(app);
         }
