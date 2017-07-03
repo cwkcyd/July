@@ -16,14 +16,11 @@ namespace July.Bootstrap
     {
         private IWebHostBuilder WebHostBuilder { get; set; }
 
-        private List<Action<IWebHostBuilder>> BuilderDelegates { get; set; }
+        private List<Action<IWebHostBuilder>> BuilderDelegates { get; set; } = new List<Action<IWebHostBuilder>>();
 
         public Bootstrapper(string[] args)
         {
-            BuilderDelegates = new List<Action<IWebHostBuilder>>();
-
-            WebHostBuilder = WebHost.CreateDefaultBuilder(args)
-                .ConfigureServices(RegisterStartupServices);
+            WebHostBuilder = WebHost.CreateDefaultBuilder(args);
         }
 
         public void ConfigureBuilder(Action<IWebHostBuilder> builderAction)
@@ -46,11 +43,11 @@ namespace July.Bootstrap
         {
             IWebHost webHost = BuildWebHost();
             await webHost.RunAsync();
-        }        
+        }
 
         private void RegisterStartupServices(IServiceCollection services)
         {
-            services.AddSingleton<IStartupConfiguration ,JulyStartupConfiguration>();
+            services.AddSingleton<IStartupConfiguration, JulyStartupConfiguration>();
         }
 
         private IWebHost BuildWebHost()
@@ -59,6 +56,8 @@ namespace July.Bootstrap
             {
                 @delegate.Invoke(WebHostBuilder);
             }
+
+            WebHostBuilder.ConfigureServices(RegisterStartupServices);
 
             return WebHostBuilder.UseStartup<TApplication>().Build();
         }
