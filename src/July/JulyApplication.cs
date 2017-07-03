@@ -2,24 +2,25 @@
 using July.Ioc;
 using July.Modules;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
 
-namespace July.Bootstrap
+namespace July
 {
-    public abstract class ApplicationBase
+    public abstract class JulyApplication : IApplication
     {
         protected IStartupConfiguration StartupConfiguration { get; private set; }
 
-        protected abstract Type StartupModule { get; }
+        public abstract Type StartupModule { get; }
 
-        public ApplicationBase(IStartupConfiguration startupConfiguration)
+        public JulyApplication(IStartupConfiguration startupConfiguration)
         {
             StartupConfiguration = startupConfiguration ?? throw new ArgumentNullException(nameof(startupConfiguration));
+        }
+
+        public JulyApplication()
+        {
+
         }
 
         public IServiceProvider ConfigureServices(IServiceCollection services)
@@ -41,9 +42,6 @@ namespace July.Bootstrap
             Run(app);
         }
 
-        protected virtual void Run(IApplicationBuilder app)
-        {
-
-        }
+        public abstract void Run(IApplicationBuilder app);
     }
 }

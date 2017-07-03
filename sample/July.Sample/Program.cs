@@ -16,7 +16,7 @@ namespace July.Sample
     {
         public static void Main(string[] args)
         {
-            new Bootstrapper(args).Run<Startup>();
+            new Bootstrapper<Startup>(args).Run();
         }
     }
 }

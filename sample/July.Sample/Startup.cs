@@ -13,7 +13,7 @@ using July.Configuration;
 
 namespace July.Sample
 {
-    public class Startup : ApplicationBase
+    public class Startup : JulyApplication
     {
         public Startup(IStartupConfiguration startupConfiguration)
             : base(startupConfiguration)
@@ -21,12 +21,10 @@ namespace July.Sample
 
         }
 
-        protected override Type StartupModule => typeof(JulySampleModule);
+        public override Type StartupModule => typeof(JulySampleModule);
 
-        protected override void Run(IApplicationBuilder app)
+        public override void Run(IApplicationBuilder app)
         {
-            base.Run(app);
-
             if (StartupConfiguration.HostingEnvironment.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

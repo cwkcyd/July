@@ -10,7 +10,8 @@ using July.Configuration;
 
 namespace July.Bootstrap
 {
-    public sealed class Bootstrapper
+    public sealed class Bootstrapper<TApplication> : IBootstraper<TApplication>
+        where TApplication : class, IApplication
     {
         private IWebHostBuilder WebHostBuilder { get; set; }
 
@@ -27,7 +28,7 @@ namespace July.Bootstrap
             WebHostBuilderAction = webHostBuilderAction;
         }
 
-        public void Run<TApplication>() where TApplication : ApplicationBase
+        public void Run()
         {
             WebHostBuilderAction?.Invoke(WebHostBuilder);
 
@@ -35,7 +36,7 @@ namespace July.Bootstrap
             webHost.Run();
         }
 
-        public async Task RunAsync<TApplication>() where TApplication : ApplicationBase
+        public async Task RunAsync()
         {
             WebHostBuilderAction?.Invoke(WebHostBuilder);
 
