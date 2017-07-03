@@ -15,7 +15,7 @@ namespace July.Ioc.Conventions
     {
         public IRegistrationBuilder<object, ConcreteReflectionActivatorData, SingleRegistrationStyle> Register(IRegistrationBuilder<object, ConcreteReflectionActivatorData, SingleRegistrationStyle> registration, Type type)
         {
-            var componentAttributes = type.GetCustomAttributes<ComponentAttribute>();
+            var componentAttributes = type.GetTypeInfo().GetCustomAttributes<ComponentAttribute>();
             if (componentAttributes.Any())
             {
                 ComponentAttribute attribute = componentAttributes.First();

@@ -20,7 +20,7 @@ namespace July.Ioc
             }
         }
 
-        private static void RegisterTypeByConvention(IocBuilder iocBuilder, Type type)
+        private static void RegisterTypeByConvention(IocBuilder iocBuilder, TypeInfo type)
         {
             if (type.IsAbstract || type.IsInterface || type.IsGenericTypeDefinition)
             {
@@ -39,10 +39,10 @@ namespace July.Ioc
                 return;
             }
 
-            var registration = iocBuilder.RegisterType(type);
+            var registration = iocBuilder.RegisterType(type.AsType());
 
             IConventionRegister register = new ConventionRegister();
-            register.Register(registration, type);
+            register.Register(registration, type.AsType());
         }
     }
 }

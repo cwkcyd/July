@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Autofac.Builder;
 using Autofac;
+using System.Reflection;
 
 namespace July.Ioc.Conventions
 {
