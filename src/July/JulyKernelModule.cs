@@ -13,11 +13,8 @@ namespace July
         public override void Initialize(IocBuilder builder)
         {
             base.Initialize(builder);
-
-            //Dot not call this
-            //builder.RegisterAssemblyByConvention(ThisAssembly);
-
-            builder.RegisterType<EventBus>().As<IEventBus>().PropertiesAutowired().SingleInstance();
+            
+            builder.RegisterAssemblyByConvention(ThisAssembly);
         }
 
         public override void Load(IIocContainer container)

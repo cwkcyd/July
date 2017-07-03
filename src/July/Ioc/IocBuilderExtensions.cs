@@ -5,6 +5,8 @@ using System.Text;
 using System.Linq;
 using Autofac;
 using Autofac.Builder;
+using Microsoft.Extensions.DependencyInjection;
+using July.Ioc.Conventions;
 
 namespace July.Ioc
 {
@@ -25,32 +27,22 @@ namespace July.Ioc
                 return;
             }
 
-            var registeration = iocBuilder.RegisterType(type)
-                .AsSelf()
-                .AsImplementedInterfaces()
-                .PropertiesAutowired();
-
-            if (typeof(ITransient).IsAssignableFrom(type))
+            var ignoreAttribute = type.GetCustomAttribute<IgnoreAttribute>();
+            if (ignoreAttribute != null)
             {
-                registeration = registeration.InstancePerDependency();
-            }
-            else if (typeof(ISingleton).IsAssignableFrom(type))
-            {
-                registeration = registeration.SingleInstance();
-            }
-            else if (typeof(IScoped).IsAssignableFrom(type))
-            {
-                registeration = registeration.InstancePerLifetimeScope();
+                return;
             }
 
-            if (typeof(ILifetimeEvents).IsAssignableFrom(type))
+            var componentAttributes = type.GetCustomAttributes<ComponentAttribute>();
+            if (!componentAttributes.Any())
             {
-                registeration.OnActivating(e => { ((ILifetimeEvents)e.Instance).OnActivating(); });
-                registeration.OnActivated(e => { ((ILifetimeEvents)e.Instance).OnActivated(); });
-                registeration.OnRelease(e => {
-                    ((ILifetimeEvents)e).OnRelease();
-                });
+                return;
             }
+
+            var registration = iocBuilder.RegisterType(type);
+
+            IConventionRegister register = new ConventionRegister();
+            register.Register(registration, type);
         }
     }
 }

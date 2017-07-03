@@ -8,7 +8,8 @@ using System.Text;
 
 namespace July.Events
 {
-    public class EventBus : IEventBus, ISingleton
+    [Singleton]
+    public class EventBus : IEventBus
     {
         private IIocContainer IocContainer { get; set; }
 
@@ -31,6 +32,12 @@ namespace July.Events
                     foreach (var handlerType in handlers)
                     {
                         IEventHandler<TEventData> handler = (IEventHandler<TEventData>)scope.ResolveOptional(handlerType);
+
+                        if (handler == null)
+                        {
+                            Logger.LogWarning($"Cannot create instance: {handlerType.FullName}, make sure you have registered it in DI");
+                            continue;
+                        }
 
                         handler.Handle(eventData);
                     }
