@@ -16,38 +16,51 @@ namespace July.Bootstrap
     {
         private IWebHostBuilder WebHostBuilder { get; set; }
 
-        private Action<IWebHostBuilder> WebHostBuilderAction { get; set; }
+        private List<Action<IWebHostBuilder>> BuilderDelegates { get; set; }
 
         public Bootstrapper(string[] args)
         {
+            BuilderDelegates = new List<Action<IWebHostBuilder>>();
+
             WebHostBuilder = WebHost.CreateDefaultBuilder(args)
                 .ConfigureServices(RegisterStartupServices);
         }
 
-        public void ConfigureWebHostBuilder(Action<IWebHostBuilder> webHostBuilderAction)
+        public void ConfigureBuilder(Action<IWebHostBuilder> builderAction)
         {
-            WebHostBuilderAction = webHostBuilderAction;
+            if (builderAction == null)
+            {
+                throw new ArgumentNullException(nameof(builderAction));
+            }
+
+            BuilderDelegates.Add(builderAction);
         }
 
         public void Run()
         {
-            WebHostBuilderAction?.Invoke(WebHostBuilder);
-
-            IWebHost webHost = WebHostBuilder.UseStartup<TApplication>().Build();
+            IWebHost webHost = BuildWebHost();
             webHost.Run();
         }
 
         public async Task RunAsync()
         {
-            WebHostBuilderAction?.Invoke(WebHostBuilder);
-
-            IWebHost webHost = WebHostBuilder.UseStartup<TApplication>().Build();
+            IWebHost webHost = BuildWebHost();
             await webHost.RunAsync();
         }        
 
         private void RegisterStartupServices(IServiceCollection services)
         {
             services.AddSingleton<IStartupConfiguration ,JulyStartupConfiguration>();
+        }
+
+        private IWebHost BuildWebHost()
+        {
+            foreach (var @delegate in BuilderDelegates)
+            {
+                @delegate.Invoke(WebHostBuilder);
+            }
+
+            return WebHostBuilder.UseStartup<TApplication>().Build();
         }
     }
 }
