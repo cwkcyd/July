@@ -18,6 +18,10 @@ namespace July.Ioc.Conventions
                 registration.OnRelease(e =>
                 {
                     ((ILifetimeEvents)e).OnRelease();
+                    if (e is IDisposable)
+                    {
+                        ((IDisposable)e).Dispose();
+                    }
                 });
             }
 
