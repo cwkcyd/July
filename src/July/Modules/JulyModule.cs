@@ -8,6 +8,7 @@ using July.Configuration;
 using System.Reflection;
 using System.Linq;
 using July.Extensions;
+using Microsoft.Extensions.Logging;
 
 namespace July.Modules
 {
@@ -17,17 +18,37 @@ namespace July.Modules
 
         protected Assembly ThisAssembly => this.GetType().GetTypeInfo().Assembly;
 
+        private ILogger _logger;
+
+        protected ILogger Logger
+        {
+            get
+            {
+                if (_logger == null)
+                {
+                    _logger = Configuration.LoggerFactory.CreateLogger(this.GetType());
+                }
+
+                return _logger;
+            }
+        }
+
         public virtual void Initialize(IocBuilder builder)
         {
             builder.RegisterAssemblyByConvention(ThisAssembly);
         }
 
-        public virtual void Load(IIocContainer container)
+        public virtual void Load(IIocContainer iocContainer)
         {
             
         }
 
-        public void Shutdown()
+        public virtual void Start(IIocContainer iocContainer)
+        {
+
+        }
+
+        public virtual void Shutdown()
         {
 
         }
