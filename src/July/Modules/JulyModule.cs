@@ -44,7 +44,7 @@ namespace July.Modules
         {
             if (!IsJulyModule(moduleType))
             {
-                throw new InvalidOperationException("This type is not an ABP module: " + moduleType.AssemblyQualifiedName);
+                throw new InvalidOperationException("This type is not a July module: " + moduleType.AssemblyQualifiedName);
             }
 
             var list = new List<Type>();
@@ -76,7 +76,7 @@ namespace July.Modules
         {
             if (!IsJulyModule(module))
             {
-                throw new InvalidOperationException("This type is not an ABP module: " + module.AssemblyQualifiedName);
+                throw new InvalidOperationException("This type is not a July module: " + module.AssemblyQualifiedName);
             }
 
             if (modules.Contains(module))
