@@ -4,32 +4,52 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Autofac;
-using July.Configuration;
 using System.Reflection;
 using System.Linq;
 using July.Extensions;
 using Microsoft.Extensions.Logging;
+using July.Startup;
+using Microsoft.AspNetCore.Hosting;
 
 namespace July.Modules
 {
     public abstract class JulyModule
     {
-        protected internal IStartupConfiguration Configuration { get; internal set; }
+        internal IStartupService StartupService { private get; set; }
 
         protected Assembly ThisAssembly => this.GetType().GetTypeInfo().Assembly;
-
-        private ILogger _logger;
 
         protected ILogger Logger
         {
             get
-            {
-                if (_logger == null)
+            {                
+                ILoggerFactory loggerFactory;
+
+                if (IocContainer.InstanceAccessable)
                 {
-                    _logger = Configuration.LoggerFactory.CreateLogger(this.GetType());
+                    loggerFactory = IocContainer.Instance.Resolve<ILoggerFactory>();
+                }
+                else
+                {
+                    loggerFactory = StartupService.LoggerFactory;
                 }
 
-                return _logger;
+                return loggerFactory.CreateLogger(this.GetType());
+            }
+        }
+
+        protected IHostingEnvironment HostingEnvironment
+        {
+            get
+            {
+                if (IocContainer.InstanceAccessable)
+                {
+                    return IocContainer.Instance.Resolve<IHostingEnvironment>();
+                }
+                else
+                {
+                    return StartupService.HostingEnvironment;
+                }
             }
         }
 
@@ -40,7 +60,7 @@ namespace July.Modules
 
         public virtual void Load(IIocContainer iocContainer)
         {
-            
+
         }
 
         public virtual void Start(IIocContainer iocContainer)
@@ -52,7 +72,7 @@ namespace July.Modules
         {
 
         }
-        
+
         public static bool IsJulyModule(Type type)
         {
             var typeInfo = type.GetTypeInfo();

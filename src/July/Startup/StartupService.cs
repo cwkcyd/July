@@ -1,13 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Microsoft.AspNetCore.Hosting;
+﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.Text;
 
-namespace July.Configuration
+namespace July.Startup
 {
-    public class JulyStartupConfiguration : IStartupConfiguration
+    public class StartupService : IStartupService
     {
         public IConfiguration Configuration { get; }
 
@@ -15,7 +15,7 @@ namespace July.Configuration
 
         public ILoggerFactory LoggerFactory { get; }
 
-        public JulyStartupConfiguration(IConfiguration configuration, IHostingEnvironment hostingEnvironment, ILoggerFactory loggerFactory)
+        public StartupService(IConfiguration configuration, IHostingEnvironment hostingEnvironment, ILoggerFactory loggerFactory)
         {
             Configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
             HostingEnvironment = hostingEnvironment ?? throw new ArgumentNullException(nameof(hostingEnvironment));

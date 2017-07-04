@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace July.Sample
 {
-    [Singleton]
+    [Transient]
     public class TestInterceptor : StandardInterceptor
     {
         protected override void PreProceed(IInvocation invocation)

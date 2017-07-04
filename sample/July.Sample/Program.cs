@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using July.Bootstrap.AspNetCore;
 using Microsoft.Extensions.Logging;
+using July.Startup;
 
 namespace July.Sample
 {

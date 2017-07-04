@@ -1,4 +1,4 @@
-﻿using July.Configuration;
+﻿using July.Startup;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -76,7 +76,7 @@ namespace July.Bootstrap.AspNetCore
             _webHostBuilder.ConfigureServices(services =>
             {
                 services.AddSingleton(configuration);
-                services.AddSingleton<IStartupConfiguration, JulyStartupConfiguration>();
+                services.AddSingleton<IStartupService, StartupService>();
             });
 
             foreach (var @delegate in _webHostBuilderDelegates)

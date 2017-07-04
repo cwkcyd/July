@@ -24,6 +24,14 @@ namespace July.Ioc
             }
         }
 
+        internal static bool InstanceAccessable
+        {
+            get
+            {
+                return _instance != null;
+            }
+        }
+
         private ILifetimeScope LifetimeScope { get; set; }
 
         public IocContainer(ILifetimeScope lifetimeScope)

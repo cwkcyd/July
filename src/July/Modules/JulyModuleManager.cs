@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using Autofac;
 using System.Linq;
-using July.Configuration;
+using July.Startup;
 using System.Reflection;
 using Microsoft.Extensions.Logging;
 
@@ -27,7 +27,7 @@ namespace July.Modules
             StartupModuleType = startupModule;
         }
 
-        public void Initialize(IocBuilder iocBuilder, IStartupConfiguration startupConfiguration)
+        public void Initialize(IocBuilder iocBuilder, IStartupService startupConfiguration)
         {
             iocBuilder.RegisterInstance(this).AsSelf().SingleInstance();
 
@@ -84,7 +84,7 @@ namespace July.Modules
             }
         }
 
-        private void LoadAllModules(IocBuilder iocBuilder, IStartupConfiguration startupConfiguration)
+        private void LoadAllModules(IocBuilder iocBuilder, IStartupService startupConfiguration)
         {
             Logger.LogDebug("Loading modules...");
             
@@ -109,7 +109,7 @@ namespace July.Modules
             return modules;
         }
 
-        private void CreateModules(IocBuilder iocBuilder, IStartupConfiguration startupConfiguration, ICollection<Type> moduleTypes)
+        private void CreateModules(IocBuilder iocBuilder, IStartupService startupConfiguration, ICollection<Type> moduleTypes)
         {
             foreach (var moduleType in moduleTypes)
             {
@@ -119,7 +119,7 @@ namespace July.Modules
                     throw new InvalidOperationException("This type is not a July Module: " + moduleType.AssemblyQualifiedName);
                 }
                 
-                moduleObject.Configuration = startupConfiguration;
+                moduleObject.StartupService = startupConfiguration;
 
                 var moduleInfo = new JulyModuleInfo(moduleType);
                 moduleInfo.Instance = moduleObject;

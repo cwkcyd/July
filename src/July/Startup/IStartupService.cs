@@ -5,9 +5,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace July.Configuration
+namespace July.Startup
 {
-    public interface IStartupConfiguration
+    public interface IStartupService
     {
         IConfiguration Configuration { get; }
 

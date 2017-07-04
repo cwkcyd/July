@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
-namespace July
+namespace July.Startup
 {
     public interface IBootstrapper<in TApplication> where TApplication : Application
     {
