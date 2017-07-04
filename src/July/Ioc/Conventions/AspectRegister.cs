@@ -217,9 +217,7 @@ namespace July.Ioc.Conventions
                 result = result.Concat((IEnumerable<Service>)services);
             }
 
-            return registration.Metadata.TryGetValue(AttributeInterceptorsPropertyName, out services)
-                ? result.Concat((IEnumerable<Service>)services)
-                : result.Concat(GetInterceptorServicesFromAttributes(implType));
+            return result;
         }
 
         private static IEnumerable<Service> GetInterceptorServicesFromAttributes(Type implType)
