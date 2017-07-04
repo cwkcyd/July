@@ -16,10 +16,16 @@ namespace July.Extensions
             IEnumerable<TAttribute> interfaceAttributes = Enumerable.Empty<TAttribute>();
             if (includeInterfaceAttributes)
             {
-                interfaceAttributes = type.GetInterfaces().SelectMany(t => t.GetTypeInfo().GetCustomAttributes<TAttribute>());
+                interfaceAttributes = type.GetInterfaceAttributes<TAttribute>();
             }
 
             return classAttributes.Union(interfaceAttributes).FirstOrDefault();
+        }
+
+        public static IEnumerable<TAttribute> GetInterfaceAttributes<TAttribute>(this Type type)
+            where TAttribute : Attribute
+        {
+            return type.GetInterfaces().SelectMany(t => t.GetTypeInfo().GetCustomAttributes<TAttribute>()); ;
         }
     }
 }

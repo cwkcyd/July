@@ -4,13 +4,9 @@ using System.Text;
 
 namespace July.Aspect
 {
-    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface, AllowMultiple = false, Inherited = true)]
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface, AllowMultiple = true, Inherited = true)]
     public class InterceptAttribute : Attribute
     {
-        public bool EnableClassInterceptors { get; set; }
-
-        public bool EnableInterfaceInterceptors { get; set; }
-
         public Type[] InterceptBy { get; set; }
 
         public InterceptAttribute(params Type[] interceptBy)

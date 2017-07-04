@@ -19,23 +19,22 @@ namespace July.Ioc.Conventions
     {
         public IRegistrationBuilder<object, ConcreteReflectionActivatorData, SingleRegistrationStyle> Register(IRegistrationBuilder<object, ConcreteReflectionActivatorData, SingleRegistrationStyle> registration, Type type)
         {
-            var attribute = type.GetFirstAttribute<InterceptAttribute>();
-            if (attribute == null)
-            {
-                return registration;
-            }
+            var classAttributes = type.GetTypeInfo().GetCustomAttributes<InterceptAttribute>();
+            var interfaceAttributes = type.GetInterfaceAttributes<InterceptAttribute>();
 
-            if (attribute.EnableClassInterceptors)
+            if (classAttributes.Any())
             {
                 registration = EnableClassInterceptors(registration);
             }
-            if (attribute.EnableInterfaceInterceptors)
+            if (interfaceAttributes.Any())
             {
                 registration = EnableInterfaceInterceptors(registration);
             }
-            if (!attribute.InterceptBy.IsNullOrEmpty())
+
+            IEnumerable<Type> interceptBy = classAttributes.Union(interfaceAttributes).SelectMany(t => t.InterceptBy);
+            if (interceptBy.Any())
             {
-                registration = InterceptedBy(registration, attribute.InterceptBy);
+                registration = InterceptedBy(registration, interceptBy.ToArray());
             }
 
             return registration;
