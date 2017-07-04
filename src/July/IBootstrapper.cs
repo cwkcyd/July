@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace July
 {
-    public interface IBootstraper<in TApplication> where TApplication : Application
+    public interface IBootstrapper<in TApplication> where TApplication : Application
     {
         void Run();
 

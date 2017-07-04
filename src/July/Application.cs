@@ -34,9 +34,8 @@ namespace July
             var iocContainer = app.ApplicationServices.GetService<IIocContainer>();
 
             manager.Load(iocContainer);
-
-            //Register shutdown events
-
+            
+            //register application lifetime events
             var applicationLifetime = app.ApplicationServices.GetService<IApplicationLifetime>();
 
             applicationLifetime.ApplicationStarted.Register(() => { manager.Start(iocContainer); });
