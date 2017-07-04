@@ -14,25 +14,11 @@ namespace July.Bootstrap.AspNetCore
     public class Bootstrapper<TApplication> : IBootstrapper<TApplication>
         where TApplication : Application
     {
-        private IWebHostBuilder _webHostBuilder;        
+        private Func<IWebHostBuilder> _webHostBuilderFunc;
 
-        private List<Action<IWebHostBuilder>> _webHostBuilderDelegates = new List<Action<IWebHostBuilder>>();
-
-        public Bootstrapper(string[] args)
+        public Bootstrapper(Func<IWebHostBuilder> webHostBuilderFunc)
         {
-            _webHostBuilder = WebHost.CreateDefaultBuilder(args);
-        }
-
-        public Bootstrapper<TApplication> ConfigureWebHostBuilder(Action<IWebHostBuilder> builderAction)
-        {
-            if (builderAction == null)
-            {
-                throw new ArgumentNullException(nameof(builderAction));
-            }
-
-            _webHostBuilderDelegates.Add(builderAction);
-
-            return this;
+            _webHostBuilderFunc = webHostBuilderFunc ?? throw new ArgumentNullException(nameof(webHostBuilderFunc));
         }
 
         public void Run()
@@ -47,19 +33,14 @@ namespace July.Bootstrap.AspNetCore
 
         private IWebHost BuildWebHost()
         {
-            _webHostBuilder.ConfigureServices(services =>
+            IWebHostBuilder builder = _webHostBuilderFunc();
+            builder.ConfigureServices(services =>
             {
                 services.AddSingleton<IStartupService, StartupService>();
             });
 
-            foreach (var @delegate in _webHostBuilderDelegates)
-            {
-                @delegate.Invoke(_webHostBuilder);
-            }
-
-            _webHostBuilder.UseStartup<TApplication>();
-
-            return _webHostBuilder.Build();
+            builder.UseStartup<TApplication>();
+            return builder.Build();
         }
     }
 }

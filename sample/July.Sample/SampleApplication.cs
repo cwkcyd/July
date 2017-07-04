@@ -8,21 +8,27 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using July.Startup;
 using Microsoft.Extensions.DependencyInjection;
+using July.Bootstrap.AspNetCore;
+using Microsoft.AspNetCore;
 
 namespace July.Sample
 {
     public class SampleApplication : Application
     {
+        public static void Main(string[] args)
+        {
+            new Bootstrapper<SampleApplication>(() => WebHost.CreateDefaultBuilder(args)).Run();
+        }
+
         public SampleApplication(IStartupService startupConfiguration) : base(startupConfiguration)
         {
+
         }
 
         public override Type StartupModule => typeof(SampleModule);
 
         public override void Run(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, IApplicationLifetime applicationLifetime)
-        {
-            loggerFactory.AddConsole();
-            
+        {            
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
