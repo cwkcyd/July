@@ -4,14 +4,18 @@ using System.Collections.Generic;
 using System.Text;
 using System.Collections;
 using Autofac;
+using July.Startup;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Configuration;
 
 namespace July.Ioc
 {
     public class IocBuilder : ContainerBuilder, IServiceCollection
     {
-        public static IocBuilder New(IServiceCollection services, Type startupModule)
+        public static IocBuilder New(IServiceCollection services, IStartupService startupService)
         {
-            IocBuilder builder = new IocBuilder(services);
+            IocBuilder builder = new IocBuilder(services, startupService);
 
             return builder;
         }
@@ -78,9 +82,12 @@ namespace July.Ioc
         
         private IServiceCollection ServiceCollection { get; set; }
 
-        private IocBuilder(IServiceCollection services)
+        private IStartupService StartupService { get; set; }
+
+        private IocBuilder(IServiceCollection services, IStartupService startupService)
         {
             ServiceCollection = services ?? throw new ArgumentNullException(nameof(services));
+            StartupService = startupService ?? throw new ArgumentNullException(nameof(startupService));
         }
 
         public IServiceProvider Build()
@@ -89,6 +96,12 @@ namespace July.Ioc
             this.RegisterType<AutofacServiceScopeFactory>().As<IServiceScopeFactory>();
 
             this.Populate(ServiceCollection);
+
+            //Register startup service at last, to prevent user replace them.
+            this.RegisterInstance(StartupService).As<IStartupService>().SingleInstance();
+            this.RegisterInstance(StartupService.HostingEnvironment).As<IHostingEnvironment>().SingleInstance();
+            this.RegisterInstance(StartupService.LoggerFactory).As<ILoggerFactory>().SingleInstance();
+            this.RegisterInstance(StartupService.Configuration).As<IConfiguration>().SingleInstance();
 
             var container = base.Build();
 

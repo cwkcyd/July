@@ -13,11 +13,11 @@ namespace July.Sample
     public class Program
     {
         public static void Main(string[] args)
-        {            
+        {
             IBootstrapper<SampleApplication> bootstrapper = new Bootstrapper<SampleApplication>(args)
-                    .ConfigureWebHostBuilder(builder =>
+                    .ConfigureWebHostBuilder(webHostBuilder =>
                     {
-                        builder.UseKestrel()
+                        webHostBuilder.UseKestrel()
                             .UseContentRoot(Directory.GetCurrentDirectory())
                             .UseIISIntegration()
                             .UseApplicationInsights();

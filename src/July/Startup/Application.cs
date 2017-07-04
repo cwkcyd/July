@@ -21,7 +21,7 @@ namespace July.Startup
 
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
-            var builder = IocBuilder.New(services, StartupModule);
+            var builder = IocBuilder.New(services, StartupService);
 
             new JulyModuleManager(StartupModule).Initialize(builder, StartupService);
 

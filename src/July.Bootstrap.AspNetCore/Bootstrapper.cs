@@ -1,4 +1,5 @@
 ﻿using July.Startup;
+using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,32 +14,13 @@ namespace July.Bootstrap.AspNetCore
     public class Bootstrapper<TApplication> : IBootstrapper<TApplication>
         where TApplication : Application
     {
-        private IWebHostBuilder _webHostBuilder;
-
-        private List<Action<IConfigurationBuilder>> _configurationDelegates = new List<Action<IConfigurationBuilder>>();
+        private IWebHostBuilder _webHostBuilder;        
 
         private List<Action<IWebHostBuilder>> _webHostBuilderDelegates = new List<Action<IWebHostBuilder>>();
 
-        private string[] _args;
-
         public Bootstrapper(string[] args)
         {
-            _args = args;
-
-            _webHostBuilder = new WebHostBuilder()
-                .ConfigureServices(services => services.AddLogging());
-        }
-
-        public Bootstrapper<TApplication> ConfigureConfiguration(Action<IConfigurationBuilder> builderAction)
-        {
-            if (builderAction == null)
-            {
-                throw new ArgumentNullException(nameof(builderAction));
-            }
-
-            _configurationDelegates.Add(builderAction);
-
-            return this;
+            _webHostBuilder = WebHost.CreateDefaultBuilder(args);
         }
 
         public Bootstrapper<TApplication> ConfigureWebHostBuilder(Action<IWebHostBuilder> builderAction)
@@ -58,24 +40,15 @@ namespace July.Bootstrap.AspNetCore
             BuildWebHost().Run();
         }
 
-        public Task RunAsync()
+        public async Task RunAsync()
         {
-            throw new NotSupportedException();
+            await BuildWebHost().RunAsync();
         }
 
         private IWebHost BuildWebHost()
         {
-            IConfigurationBuilder configurationBuilder = new ConfigurationBuilder()
-                .AddEnvironmentVariables()
-                .AddCommandLine(_args);
-            foreach (var @delegate in _configurationDelegates)
-            {
-                @delegate.Invoke(configurationBuilder);
-            }
-            IConfiguration configuration = configurationBuilder.Build();
             _webHostBuilder.ConfigureServices(services =>
             {
-                services.AddSingleton(configuration);
                 services.AddSingleton<IStartupService, StartupService>();
             });
 
