@@ -42,7 +42,7 @@ namespace July.Ioc
 
             var registration = iocBuilder.RegisterType(type.AsType());
 
-            IConventionRegister register = new ConventionRegister();
+            IConventionRegister<object, ConcreteReflectionActivatorData, SingleRegistrationStyle> register = new ConventionRegister<object, ConcreteReflectionActivatorData, SingleRegistrationStyle>();
             register.Register(registration, type.AsType());
         }
     }

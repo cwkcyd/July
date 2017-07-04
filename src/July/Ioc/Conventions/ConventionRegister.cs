@@ -5,16 +5,16 @@ using Autofac.Builder;
 
 namespace July.Ioc.Conventions
 {
-    public class ConventionRegister : List<IConventionRegister>, IConventionRegister
+    public class ConventionRegister<TLimit, TActivatorData, TRegistrationStyle> : List<IConventionRegister<TLimit, TActivatorData, TRegistrationStyle>>, IConventionRegister<TLimit, TActivatorData, TRegistrationStyle>
     {
         public ConventionRegister()
         {
-            Add(new ComponentRegister());
-            Add(new LifetimeEventsRegister());
-            Add(new AspectRegister());
+            Add(new ComponentRegister<TLimit, TActivatorData, TRegistrationStyle>());
+            Add(new LifetimeEventsRegister<TLimit, TActivatorData, TRegistrationStyle>());
+            Add(new AspectRegister<TLimit, TActivatorData, TRegistrationStyle>());
         }
 
-        public IRegistrationBuilder<object, ConcreteReflectionActivatorData, SingleRegistrationStyle> Register(IRegistrationBuilder<object, ConcreteReflectionActivatorData, SingleRegistrationStyle> registration, Type type)
+        public IRegistrationBuilder<TLimit, TActivatorData, TRegistrationStyle> Register(IRegistrationBuilder<TLimit, TActivatorData, TRegistrationStyle> registration, Type type)
         {
             foreach (var register in this)
             {

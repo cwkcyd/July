@@ -5,8 +5,8 @@ using System.Text;
 
 namespace July.Ioc.Conventions
 {
-    public interface IConventionRegister
+    public interface IConventionRegister<TLimit, TActivatorData, TRegistrationStyle>
     {
-        IRegistrationBuilder<object, ConcreteReflectionActivatorData, SingleRegistrationStyle> Register(IRegistrationBuilder<object, ConcreteReflectionActivatorData, SingleRegistrationStyle> registration, Type type);
+        IRegistrationBuilder<TLimit, TActivatorData, TRegistrationStyle> Register(IRegistrationBuilder<TLimit, TActivatorData, TRegistrationStyle> registration, Type type);
     }
 }

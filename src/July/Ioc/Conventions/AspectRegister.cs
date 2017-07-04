@@ -15,23 +15,21 @@ using Autofac.Features.Scanning;
 
 namespace July.Ioc.Conventions
 {
-    public class AspectRegister : IConventionRegister
+    public class AspectRegister<TLimit, TActivatorData, TRegistrationStyle> : IConventionRegister<TLimit, TActivatorData, TRegistrationStyle>
     {
-        public IRegistrationBuilder<object, ConcreteReflectionActivatorData, SingleRegistrationStyle> Register(IRegistrationBuilder<object, ConcreteReflectionActivatorData, SingleRegistrationStyle> registration, Type type)
+        public IRegistrationBuilder<TLimit, TActivatorData, TRegistrationStyle> Register(IRegistrationBuilder<TLimit, TActivatorData, TRegistrationStyle> registration, Type type)
         {
             var classAttributes = type.GetTypeInfo().GetCustomAttributes<InterceptAttribute>();
             var interfaceAttributes = type.GetInterfaceAttributes<InterceptAttribute>();
 
-            if (classAttributes.Any())
+            var allAttributes = classAttributes.Union(interfaceAttributes);
+
+            if (allAttributes.Any())
             {
                 registration = EnableClassInterceptors(registration);
             }
-            if (interfaceAttributes.Any())
-            {
-                registration = EnableInterfaceInterceptors(registration);
-            }
 
-            IEnumerable<Type> interceptBy = classAttributes.Union(interfaceAttributes).SelectMany(t => t.InterceptBy);
+            IEnumerable<Type> interceptBy = allAttributes.SelectMany(t => t.InterceptBy);
             if (interceptBy.Any())
             {
                 registration = InterceptedBy(registration, interceptBy.ToArray());
@@ -54,55 +52,14 @@ namespace July.Ioc.Conventions
         /// Only virtual methods can be intercepted this way.
         /// </summary>
         /// <typeparam name="TLimit">Registration limit type.</typeparam>
-        /// <typeparam name="TRegistrationStyle">Registration style.</typeparam>
-        /// <param name="registration">Registration to apply interception to.</param>
-        /// <returns>Registration builder allowing the registration to be configured.</returns>
-        private static IRegistrationBuilder<TLimit, ScanningActivatorData, TRegistrationStyle> EnableClassInterceptors<TLimit, TRegistrationStyle>(
-            IRegistrationBuilder<TLimit, ScanningActivatorData, TRegistrationStyle> registration)
-        {
-            return EnableClassInterceptors(registration, ProxyGenerationOptions.Default);
-        }
-
-        /// <summary>
-        /// Enable class interception on the target type. Interceptors will be determined
-        /// via Intercept attributes on the class or added with InterceptedBy().
-        /// Only virtual methods can be intercepted this way.
-        /// </summary>
-        /// <typeparam name="TLimit">Registration limit type.</typeparam>
         /// <typeparam name="TConcreteReflectionActivatorData">Activator data type.</typeparam>
         /// <typeparam name="TRegistrationStyle">Registration style.</typeparam>
         /// <param name="registration">Registration to apply interception to.</param>
         /// <returns>Registration builder allowing the registration to be configured.</returns>
-        private static IRegistrationBuilder<TLimit, TConcreteReflectionActivatorData, TRegistrationStyle> EnableClassInterceptors<TLimit, TConcreteReflectionActivatorData, TRegistrationStyle>(
-            IRegistrationBuilder<TLimit, TConcreteReflectionActivatorData, TRegistrationStyle> registration)
-            where TConcreteReflectionActivatorData : ConcreteReflectionActivatorData
+        private static IRegistrationBuilder<TLimit, TActivatorData, TRegistrationStyle> EnableClassInterceptors(
+            IRegistrationBuilder<TLimit, TActivatorData, TRegistrationStyle> registration)
         {
             return EnableClassInterceptors(registration, ProxyGenerationOptions.Default);
-        }
-
-        /// <summary>
-        /// Enable class interception on the target type. Interceptors will be determined
-        /// via Intercept attributes on the class or added with InterceptedBy().
-        /// Only virtual methods can be intercepted this way.
-        /// </summary>
-        /// <typeparam name="TLimit">Registration limit type.</typeparam>
-        /// <typeparam name="TRegistrationStyle">Registration style.</typeparam>
-        /// <param name="registration">Registration to apply interception to.</param>
-        /// <param name="options">Proxy generation options to apply.</param>
-        /// <param name="additionalInterfaces">Additional interface types. Calls to their members will be proxied as well.</param>
-        /// <returns>Registration builder allowing the registration to be configured.</returns>
-        private static IRegistrationBuilder<TLimit, ScanningActivatorData, TRegistrationStyle> EnableClassInterceptors<TLimit, TRegistrationStyle>(
-            IRegistrationBuilder<TLimit, ScanningActivatorData, TRegistrationStyle> registration,
-            ProxyGenerationOptions options,
-            params Type[] additionalInterfaces)
-        {
-            if (registration == null)
-            {
-                throw new ArgumentNullException(nameof(registration));
-            }
-
-            registration.ActivatorData.ConfigurationActions.Add((t, rb) => EnableClassInterceptors(rb, options, additionalInterfaces));
-            return registration;
         }
 
         /// <summary>
@@ -117,25 +74,31 @@ namespace July.Ioc.Conventions
         /// <param name="options">Proxy generation options to apply.</param>
         /// <param name="additionalInterfaces">Additional interface types. Calls to their members will be proxied as well.</param>
         /// <returns>Registration builder allowing the registration to be configured.</returns>
-        private static IRegistrationBuilder<TLimit, TConcreteReflectionActivatorData, TRegistrationStyle> EnableClassInterceptors<TLimit, TConcreteReflectionActivatorData, TRegistrationStyle>(
-            IRegistrationBuilder<TLimit, TConcreteReflectionActivatorData, TRegistrationStyle> registration,
+        private static IRegistrationBuilder<TLimit, TActivatorData, TRegistrationStyle> EnableClassInterceptors(
+            IRegistrationBuilder<TLimit, TActivatorData, TRegistrationStyle> registration,
             ProxyGenerationOptions options,
             params Type[] additionalInterfaces)
-            where TConcreteReflectionActivatorData : ConcreteReflectionActivatorData
         {
             if (registration == null)
             {
                 throw new ArgumentNullException(nameof(registration));
             }
 
-            registration.ActivatorData.ImplementationType =
+            if (!(registration.ActivatorData is ConcreteReflectionActivatorData))
+            {
+                return registration;
+            }
+
+            var activatorData = registration.ActivatorData as ConcreteReflectionActivatorData;
+
+            activatorData.ImplementationType =
                 ProxyGenerator.ProxyBuilder.CreateClassProxyType(
-                    registration.ActivatorData.ImplementationType,
+                    activatorData.ImplementationType,
                     additionalInterfaces ?? new Type[0],
                     options);
 
-            var interceptorServices = GetInterceptorServicesFromAttributes(registration.ActivatorData.ImplementationType);
-            AddInterceptorServicesToMetadata(registration, interceptorServices, AttributeInterceptorsPropertyName);
+            var interceptorServices = GetInterceptorServicesFromAttributes(activatorData.ImplementationType);
+            AddInterceptorServicesToMetadata<TRegistrationStyle>(registration, interceptorServices, AttributeInterceptorsPropertyName);
 
             registration.OnPreparing(e =>
             {
@@ -150,7 +113,7 @@ namespace July.Ioc.Conventions
                     }
                 }
 
-                proxyParameters.Add(new PositionalParameter(index++, GetInterceptorServices(e.Component, registration.ActivatorData.ImplementationType)
+                proxyParameters.Add(new PositionalParameter(index++, GetInterceptorServices(e.Component, activatorData.ImplementationType)
                     .Select(s => e.Context.ResolveService(s))
                     .Cast<IInterceptor>()
                     .ToArray()));
@@ -164,75 +127,7 @@ namespace July.Ioc.Conventions
             });
 
             return registration;
-        }
-
-        /// <summary>
-        /// Enable interface interception on the target type. Interceptors will be determined
-        /// via Intercept attributes on the class or interface, or added with InterceptedBy() calls.
-        /// </summary>
-        /// <typeparam name="TLimit">Registration limit type.</typeparam>
-        /// <typeparam name="TActivatorData">Activator data type.</typeparam>
-        /// <typeparam name="TSingleRegistrationStyle">Registration style.</typeparam>
-        /// <param name="registration">Registration to apply interception to.</param>
-        /// <returns>Registration builder allowing the registration to be configured.</returns>
-        private static IRegistrationBuilder<TLimit, TActivatorData, TSingleRegistrationStyle> EnableInterfaceInterceptors<TLimit, TActivatorData, TSingleRegistrationStyle>(
-            IRegistrationBuilder<TLimit, TActivatorData, TSingleRegistrationStyle> registration)
-        {
-            return EnableInterfaceInterceptors(registration, null);
-        }
-
-        /// <summary>
-        /// Enable interface interception on the target type. Interceptors will be determined
-        /// via Intercept attributes on the class or interface, or added with InterceptedBy() calls.
-        /// </summary>
-        /// <typeparam name="TLimit">Registration limit type.</typeparam>
-        /// <typeparam name="TActivatorData">Activator data type.</typeparam>
-        /// <typeparam name="TSingleRegistrationStyle">Registration style.</typeparam>
-        /// <param name="registration">Registration to apply interception to.</param>
-        /// <param name="options">Proxy generation options to apply.</param>
-        /// <returns>Registration builder allowing the registration to be configured.</returns>
-        private static IRegistrationBuilder<TLimit, TActivatorData, TSingleRegistrationStyle> EnableInterfaceInterceptors<TLimit, TActivatorData, TSingleRegistrationStyle>(
-            IRegistrationBuilder<TLimit, TActivatorData, TSingleRegistrationStyle> registration, ProxyGenerationOptions options)
-        {
-            if (registration == null)
-            {
-                throw new ArgumentNullException(nameof(registration));
-            }
-
-            registration.RegistrationData.ActivatingHandlers.Add((sender, e) =>
-            {
-                EnsureInterfaceInterceptionApplies(e.Component);
-
-                var proxiedInterfaces = e.Instance
-                    .GetType()
-                    .GetInterfaces()
-                    .Where(i =>
-                    {
-                        var ti = i.GetTypeInfo();
-                        return ti.IsVisible || ti.Assembly.IsInternalToDynamicProxy();
-                    })
-                    .ToArray();
-
-                if (!proxiedInterfaces.Any())
-                {
-                    return;
-                }
-
-                var theInterface = proxiedInterfaces.First();
-                var interfaces = proxiedInterfaces.Skip(1).ToArray();
-
-                var interceptors = GetInterceptorServices(e.Component, e.Instance.GetType())
-                    .Select(s => e.Context.ResolveService(s))
-                    .Cast<IInterceptor>()
-                    .ToArray();
-
-                e.Instance = options == null
-                    ? ProxyGenerator.CreateInterfaceProxyWithTarget(theInterface, interfaces, e.Instance, interceptors)
-                    : ProxyGenerator.CreateInterfaceProxyWithTarget(theInterface, interfaces, e.Instance, options, interceptors);
-            });
-
-            return registration;
-        }
+        }        
 
         /// <summary>
         /// Allows a list of interceptor services to be assigned to the registration.
@@ -244,7 +139,7 @@ namespace July.Ioc.Conventions
         /// <param name="interceptorServices">The interceptor services.</param>
         /// <returns>Registration builder allowing the registration to be configured.</returns>
         /// <exception cref="System.ArgumentNullException">builder or interceptorServices</exception>
-        private static IRegistrationBuilder<TLimit, TActivatorData, TStyle> InterceptedBy<TLimit, TActivatorData, TStyle>(
+        private static IRegistrationBuilder<TLimit, TActivatorData, TStyle> InterceptedBy<TStyle>(
             IRegistrationBuilder<TLimit, TActivatorData, TStyle> builder,
             params Service[] interceptorServices)
         {
@@ -270,32 +165,10 @@ namespace July.Ioc.Conventions
         /// <typeparam name="TActivatorData">Activator data type.</typeparam>
         /// <typeparam name="TStyle">Registration style.</typeparam>
         /// <param name="builder">Registration to apply interception to.</param>
-        /// <param name="interceptorServiceNames">The names of the interceptor services.</param>
-        /// <returns>Registration builder allowing the registration to be configured.</returns>
-        /// <exception cref="System.ArgumentNullException">builder or interceptorServices</exception>
-        private static IRegistrationBuilder<TLimit, TActivatorData, TStyle> InterceptedBy<TLimit, TActivatorData, TStyle>(
-            IRegistrationBuilder<TLimit, TActivatorData, TStyle> builder,
-            params string[] interceptorServiceNames)
-        {
-            if (interceptorServiceNames == null || interceptorServiceNames.Any(n => n == null))
-            {
-                throw new ArgumentNullException(nameof(interceptorServiceNames));
-            }
-
-            return InterceptedBy(builder, interceptorServiceNames.Select(n => new KeyedService(n, typeof(IInterceptor))).ToArray());
-        }
-
-        /// <summary>
-        /// Allows a list of interceptor services to be assigned to the registration.
-        /// </summary>
-        /// <typeparam name="TLimit">Registration limit type.</typeparam>
-        /// <typeparam name="TActivatorData">Activator data type.</typeparam>
-        /// <typeparam name="TStyle">Registration style.</typeparam>
-        /// <param name="builder">Registration to apply interception to.</param>
         /// <param name="interceptorServiceTypes">The types of the interceptor services.</param>
         /// <returns>Registration builder allowing the registration to be configured.</returns>
         /// <exception cref="System.ArgumentNullException">builder or interceptorServices</exception>
-        private static IRegistrationBuilder<TLimit, TActivatorData, TStyle> InterceptedBy<TLimit, TActivatorData, TStyle>(
+        private static IRegistrationBuilder<TLimit, TActivatorData, TStyle> InterceptedBy<TStyle>(
             IRegistrationBuilder<TLimit, TActivatorData, TStyle> builder,
             params Type[] interceptorServiceTypes)
         {
@@ -306,23 +179,8 @@ namespace July.Ioc.Conventions
 
             return InterceptedBy(builder, interceptorServiceTypes.Select(t => new TypedService(t)).ToArray());
         }
-        
-        private static void EnsureInterfaceInterceptionApplies(IComponentRegistration componentRegistration)
-        {
-            if (componentRegistration.Services
-                .OfType<IServiceWithType>()
-                .Select(s => s.ServiceType.GetTypeInfo())
-                .Any(s => !s.IsInterface || (!s.Assembly.IsInternalToDynamicProxy() && !s.IsVisible)))
-            {
-                throw new InvalidOperationException(
-                    string.Format(
-                        CultureInfo.CurrentCulture,
-                        "The component {0} cannot use interface interception as it provides services that are not publicly visible interfaces. Check your registration of the component to ensure you're not enabling interception and registering it as an internal/private interface type.",
-                        componentRegistration));
-            }
-        }
 
-        private static void AddInterceptorServicesToMetadata<TLimit, TActivatorData, TStyle>(
+        private static void AddInterceptorServicesToMetadata<TStyle>(
             IRegistrationBuilder<TLimit, TActivatorData, TStyle> builder,
             IEnumerable<Service> interceptorServices,
             string metadataKey)

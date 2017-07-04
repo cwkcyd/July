@@ -10,19 +10,20 @@ using July.Extensions;
 
 namespace July.Ioc.Conventions
 {
-    public class ComponentRegister : IConventionRegister
+    public class ComponentRegister<TLimit, TActivatorData, TRegistrationStyle> : IConventionRegister<TLimit, TActivatorData, TRegistrationStyle>
     {
-        public IRegistrationBuilder<object, ConcreteReflectionActivatorData, SingleRegistrationStyle> Register(IRegistrationBuilder<object, ConcreteReflectionActivatorData, SingleRegistrationStyle> registration, Type type)
+        public IRegistrationBuilder<TLimit, TActivatorData, TRegistrationStyle> Register(IRegistrationBuilder<TLimit, TActivatorData, TRegistrationStyle> registration, Type type)
         {
             ComponentAttribute attribute = type.GetFirstAttribute<ComponentAttribute>(true);
 
             if (attribute.AsSelf)
             {
-                registration = registration.AsSelf();
+                registration = registration.As(type);
             }
             if (attribute.AsImplementedInterfaces)
             {
-                registration = registration.AsImplementedInterfaces();
+                var interfaceTypes = type.GetInterfaces();
+                registration = registration.As(interfaceTypes);
             }
             if (attribute.PropertyAutoWired)
             {
