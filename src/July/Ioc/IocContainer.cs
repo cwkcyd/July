@@ -7,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace July.Ioc
 {
-    public class IocContainer : IIocContainer, IStartable, IServiceProvider, ISupportRequiredService
+    public class IocContainer : IIocContainer, IServiceProvider, ISupportRequiredService
     {
         private static IIocContainer _instance;
 
@@ -37,6 +37,7 @@ namespace July.Ioc
         public IocContainer(ILifetimeScope lifetimeScope)
         {
             LifetimeScope = lifetimeScope ?? throw new ArgumentNullException(nameof(lifetimeScope));
+            _instance = this;
         }
 
         #region IServiceProivder
@@ -53,15 +54,6 @@ namespace July.Ioc
         public object GetRequiredService(Type serviceType)
         {
             return LifetimeScope.Resolve(serviceType);
-        }
-
-        #endregion
-
-        #region IStartable
-
-        public void Start()
-        {
-            _instance = this;
         }
 
         #endregion
