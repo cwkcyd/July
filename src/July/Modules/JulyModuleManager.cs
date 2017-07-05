@@ -37,6 +37,14 @@ namespace July.Modules
             _moduleList = new JulyModuleCollection(StartupModuleType);
 
             LoadAllModules(iocBuilder, startupConfiguration);
+
+            var sortedModules = _moduleList.GetSortedModuleListByDependency();
+
+            foreach (var module in sortedModules)
+            {
+                module.Instance.Initialize();
+                Logger.LogDebug($"Module: {module.Type.AssemblyQualifiedName} initialized");
+            }
         }
 
         public void ConfigureServices(IocBuilder iocBuilder)
