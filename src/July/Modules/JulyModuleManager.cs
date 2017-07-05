@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Builder;
 
 namespace July.Modules
 {
+    [Ignore]
     public class JulyModuleManager
     {
         private JulyModuleInfo StartupModule { get; set; }
