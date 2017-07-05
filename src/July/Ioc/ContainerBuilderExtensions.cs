@@ -61,11 +61,6 @@ namespace July.Ioc
         {
             foreach (var descriptor in descriptors)
             {
-                if (descriptor.ServiceType.Name == "ITelemetryChannel")
-                {
-
-                }
-
                 if (descriptor.ImplementationType != null)
                 {
                     // Test if the an open generic type is being registered

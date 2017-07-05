@@ -32,7 +32,7 @@ namespace July.Ioc
         /// </returns>
         public IServiceScope CreateScope()
         {
-            return new AutofacServiceScope(this._lifetimeScope.BeginLifetimeScope());
+            return new AutofacServiceScope(this._lifetimeScope.BeginLifetimeScope(Guid.NewGuid()));
         }
     }
 }

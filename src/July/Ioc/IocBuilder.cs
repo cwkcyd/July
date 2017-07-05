@@ -92,7 +92,8 @@ namespace July.Ioc
 
         public IServiceProvider Build()
         {
-            this.RegisterType<IocContainer>().AsSelf().As<IIocContainer>().As<IServiceProvider>().SingleInstance();
+            this.RegisterType<IocContainer>().AsSelf().As<IIocContainer>().SingleInstance();
+            this.RegisterType<LifetimeServiceProvider>().As<IServiceProvider>().InstancePerLifetimeScope();
             this.RegisterType<AutofacServiceScopeFactory>().As<IServiceScopeFactory>();
 
             this.Populate(ServiceCollection);
@@ -105,7 +106,7 @@ namespace July.Ioc
 
             var container = base.Build();
 
-            return container.Resolve<IocContainer>();
+            return container.Resolve<IocContainer>().Resolve<IServiceProvider>();
         }
     }
 }

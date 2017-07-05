@@ -7,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace July.Ioc
 {
-    public class IocContainer : IIocContainer, IServiceProvider, ISupportRequiredService
+    public class IocContainer : IIocContainer
     {
         private static IIocContainer _instance;
 
@@ -40,29 +40,11 @@ namespace July.Ioc
             _instance = this;
         }
 
-        #region IServiceProivder
-
-        public object GetService(Type serviceType)
-        {
-            return LifetimeScope.ResolveOptional(serviceType);
-        }
-
-        #endregion
-
-        #region ISupportRequiredService
-
-        public object GetRequiredService(Type serviceType)
-        {
-            return LifetimeScope.Resolve(serviceType);
-        }
-
-        #endregion
-
         #region IIocContainer
 
         public object Resolve(Type type)
         {
-            return GetService(type);
+            return LifetimeScope.ResolveOptional(type);
         }
 
         public bool IsRegistered(Type type)

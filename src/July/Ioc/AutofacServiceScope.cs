@@ -23,7 +23,7 @@ namespace July.Ioc
         public AutofacServiceScope(ILifetimeScope lifetimeScope)
         {
             this._lifetimeScope = lifetimeScope;
-            this.ServiceProvider = this._lifetimeScope.Resolve<IServiceProvider>();
+            ServiceProvider = _lifetimeScope.Resolve<IServiceProvider>();
         }
 
         /// <summary>
