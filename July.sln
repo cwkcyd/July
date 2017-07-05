@@ -17,6 +17,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "July.Bootstrap.AspNetCore",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "July.Sample", "sample\July.Sample\July.Sample.csproj", "{257AA795-D5F4-4145-AC2D-7743DF87462B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "July.Modules.EntityFrameworkCore", "src\July.Modules.EntityFrameworkCore\July.Modules.EntityFrameworkCore.csproj", "{F05B36EF-D531-42CD-9CF7-5E4764F0EBD1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{257AA795-D5F4-4145-AC2D-7743DF87462B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{257AA795-D5F4-4145-AC2D-7743DF87462B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{257AA795-D5F4-4145-AC2D-7743DF87462B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F05B36EF-D531-42CD-9CF7-5E4764F0EBD1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F05B36EF-D531-42CD-9CF7-5E4764F0EBD1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F05B36EF-D531-42CD-9CF7-5E4764F0EBD1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F05B36EF-D531-42CD-9CF7-5E4764F0EBD1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -48,6 +54,7 @@ Global
 		{EF9B4EAB-240D-49F8-ADBF-7CCE9B7ADF59} = {DD9C04D8-A261-4150-A304-73AEA21B9F82}
 		{4F9AC789-FD13-4DF4-94FF-59C055CEFAC4} = {95E24A58-5B0B-42E7-A576-C70D517DE40E}
 		{257AA795-D5F4-4145-AC2D-7743DF87462B} = {1E7D95E2-71FE-404A-9098-7DD509E52399}
+		{F05B36EF-D531-42CD-9CF7-5E4764F0EBD1} = {95E24A58-5B0B-42E7-A576-C70D517DE40E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6604D47E-A8E6-438C-AD53-9DF366C82F7F}
