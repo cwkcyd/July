@@ -15,9 +15,9 @@ using Autofac.Features.Scanning;
 
 namespace July.Ioc.Conventions
 {
-    public class AspectRegister<TLimit, TActivatorData, TRegistrationStyle> : IConventionRegister<TLimit, TActivatorData, TRegistrationStyle>
+    public class AspectRegister : IConventionRegister
     {
-        public IRegistrationBuilder<TLimit, TActivatorData, TRegistrationStyle> Register(IRegistrationBuilder<TLimit, TActivatorData, TRegistrationStyle> registration, Type type)
+        public IRegistrationBuilder<TLimit, TActivatorData, TRegistrationStyle> Register<TLimit, TActivatorData, TRegistrationStyle>(IRegistrationBuilder<TLimit, TActivatorData, TRegistrationStyle> registration, Type type)
         {
             var classAttributes = type.GetTypeInfo().GetCustomAttributes<InterceptAttribute>();
             var interfaceAttributes = type.GetInterfaceAttributes<InterceptAttribute>();
@@ -56,7 +56,7 @@ namespace July.Ioc.Conventions
         /// <typeparam name="TRegistrationStyle">Registration style.</typeparam>
         /// <param name="registration">Registration to apply interception to.</param>
         /// <returns>Registration builder allowing the registration to be configured.</returns>
-        private static IRegistrationBuilder<TLimit, TActivatorData, TRegistrationStyle> EnableClassInterceptors(
+        private static IRegistrationBuilder<TLimit, TActivatorData, TRegistrationStyle> EnableClassInterceptors<TLimit, TActivatorData, TRegistrationStyle>(
             IRegistrationBuilder<TLimit, TActivatorData, TRegistrationStyle> registration)
         {
             return EnableClassInterceptors(registration, ProxyGenerationOptions.Default);
@@ -74,7 +74,7 @@ namespace July.Ioc.Conventions
         /// <param name="options">Proxy generation options to apply.</param>
         /// <param name="additionalInterfaces">Additional interface types. Calls to their members will be proxied as well.</param>
         /// <returns>Registration builder allowing the registration to be configured.</returns>
-        private static IRegistrationBuilder<TLimit, TActivatorData, TRegistrationStyle> EnableClassInterceptors(
+        private static IRegistrationBuilder<TLimit, TActivatorData, TRegistrationStyle> EnableClassInterceptors<TLimit, TActivatorData, TRegistrationStyle>(
             IRegistrationBuilder<TLimit, TActivatorData, TRegistrationStyle> registration,
             ProxyGenerationOptions options,
             params Type[] additionalInterfaces)
@@ -98,7 +98,7 @@ namespace July.Ioc.Conventions
                     options);
 
             var interceptorServices = GetInterceptorServicesFromAttributes(activatorData.ImplementationType);
-            AddInterceptorServicesToMetadata<TRegistrationStyle>(registration, interceptorServices, AttributeInterceptorsPropertyName);
+            AddInterceptorServicesToMetadata(registration, interceptorServices, AttributeInterceptorsPropertyName);
 
             registration.OnPreparing(e =>
             {
@@ -139,8 +139,8 @@ namespace July.Ioc.Conventions
         /// <param name="interceptorServices">The interceptor services.</param>
         /// <returns>Registration builder allowing the registration to be configured.</returns>
         /// <exception cref="System.ArgumentNullException">builder or interceptorServices</exception>
-        private static IRegistrationBuilder<TLimit, TActivatorData, TStyle> InterceptedBy<TStyle>(
-            IRegistrationBuilder<TLimit, TActivatorData, TStyle> builder,
+        private static IRegistrationBuilder<TLimit, TActivatorData, TRegistrationStyle> InterceptedBy<TLimit, TActivatorData, TRegistrationStyle>(
+            IRegistrationBuilder<TLimit, TActivatorData, TRegistrationStyle> builder,
             params Service[] interceptorServices)
         {
             if (builder == null)
@@ -168,8 +168,8 @@ namespace July.Ioc.Conventions
         /// <param name="interceptorServiceTypes">The types of the interceptor services.</param>
         /// <returns>Registration builder allowing the registration to be configured.</returns>
         /// <exception cref="System.ArgumentNullException">builder or interceptorServices</exception>
-        private static IRegistrationBuilder<TLimit, TActivatorData, TStyle> InterceptedBy<TStyle>(
-            IRegistrationBuilder<TLimit, TActivatorData, TStyle> builder,
+        private static IRegistrationBuilder<TLimit, TActivatorData, TRegistrationStyle> InterceptedBy<TLimit, TActivatorData, TRegistrationStyle>(
+            IRegistrationBuilder<TLimit, TActivatorData, TRegistrationStyle> builder,
             params Type[] interceptorServiceTypes)
         {
             if (interceptorServiceTypes == null || interceptorServiceTypes.Any(t => t == null))
@@ -180,8 +180,8 @@ namespace July.Ioc.Conventions
             return InterceptedBy(builder, interceptorServiceTypes.Select(t => new TypedService(t)).ToArray());
         }
 
-        private static void AddInterceptorServicesToMetadata<TStyle>(
-            IRegistrationBuilder<TLimit, TActivatorData, TStyle> builder,
+        private static void AddInterceptorServicesToMetadata<TLimit, TActivatorData, TRegistrationStyle>(
+            IRegistrationBuilder<TLimit, TActivatorData, TRegistrationStyle> builder,
             IEnumerable<Service> interceptorServices,
             string metadataKey)
         {

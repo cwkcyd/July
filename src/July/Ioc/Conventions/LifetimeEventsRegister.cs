@@ -7,9 +7,9 @@ using System.Reflection;
 
 namespace July.Ioc.Conventions
 {
-    public class LifetimeEventsRegister<TLimit, TActivatorData, TRegistrationStyle> : IConventionRegister<TLimit, TActivatorData, TRegistrationStyle>
+    public class LifetimeEventsRegister : IConventionRegister
     {
-        public IRegistrationBuilder<TLimit, TActivatorData, TRegistrationStyle> Register(IRegistrationBuilder<TLimit, TActivatorData, TRegistrationStyle> registration, Type type)
+        public IRegistrationBuilder<TLimit, TActivatorData, TRegistrationStyle> Register<TLimit, TActivatorData, TRegistrationStyle>(IRegistrationBuilder<TLimit, TActivatorData, TRegistrationStyle> registration, Type type)
         {
             if (typeof(ILifetimeEvents).IsAssignableFrom(type))
             {

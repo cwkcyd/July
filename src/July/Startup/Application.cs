@@ -1,5 +1,6 @@
 ﻿using July.Ioc;
 using July.Modules;
+using July.Settings;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,6 +18,8 @@ namespace July.Startup
         public Application(IStartupService startupService)
         {
             StartupService = startupService ?? throw new ArgumentNullException(nameof(startupService));
+
+            GlobalSettings.Initialize(StartupService.Configuration, startupService.HostingEnvironment);
         }
 
         public IServiceProvider ConfigureServices(IServiceCollection services)

@@ -8,6 +8,7 @@ using Autofac.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using July.Ioc.Conventions;
 using July.Extensions;
+using July.Settings;
 
 namespace July.Ioc
 {
@@ -42,8 +43,12 @@ namespace July.Ioc
 
             var registration = iocBuilder.RegisterType(type.AsType());
 
-            IConventionRegister<object, ConcreteReflectionActivatorData, SingleRegistrationStyle> register = new ConventionRegister<object, ConcreteReflectionActivatorData, SingleRegistrationStyle>();
-            register.Register(registration, type.AsType());
+            IocConventionOptions options = GlobalSettings.Instance.IocConventionOptions();
+
+            foreach (var register in options.ConventionRegisters)
+            {
+                register.Register(registration, type);
+            }
         }
     }
 }

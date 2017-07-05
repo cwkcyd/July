@@ -10,9 +10,9 @@ using July.Extensions;
 
 namespace July.Ioc.Conventions
 {
-    public class ComponentRegister<TLimit, TActivatorData, TRegistrationStyle> : IConventionRegister<TLimit, TActivatorData, TRegistrationStyle>
+    public class ComponentRegister : IConventionRegister
     {
-        public IRegistrationBuilder<TLimit, TActivatorData, TRegistrationStyle> Register(IRegistrationBuilder<TLimit, TActivatorData, TRegistrationStyle> registration, Type type)
+        public IRegistrationBuilder<TLimit, TActivatorData, TRegistrationStyle> Register<TLimit, TActivatorData, TRegistrationStyle>(IRegistrationBuilder<TLimit, TActivatorData, TRegistrationStyle> registration, Type type)
         {
             ComponentAttribute attribute = type.GetFirstAttribute<ComponentAttribute>(true);
 
