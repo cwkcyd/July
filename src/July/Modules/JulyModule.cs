@@ -10,6 +10,8 @@ using July.Extensions;
 using Microsoft.Extensions.Logging;
 using July.Startup;
 using Microsoft.AspNetCore.Hosting;
+using July.Settings;
+using Microsoft.AspNetCore.Builder;
 
 namespace July.Modules
 {
@@ -19,15 +21,28 @@ namespace July.Modules
 
         protected Assembly ThisAssembly => this.GetType().GetTypeInfo().Assembly;
 
+        protected IIocContainer IocContainer
+        {
+            get
+            {
+                if (!Ioc.IocContainer.InstanceAccessable)
+                {
+                    throw new InvalidOperationException("Cannot access IocContainer instance. It is available in Configure method and later methods");
+                }
+
+                return Ioc.IocContainer.Instance;
+            }
+        }
+
         protected ILogger Logger
         {
             get
             {                
                 ILoggerFactory loggerFactory;
 
-                if (IocContainer.InstanceAccessable)
+                if (Ioc.IocContainer.InstanceAccessable)
                 {
-                    loggerFactory = IocContainer.Instance.Resolve<ILoggerFactory>();
+                    loggerFactory = Ioc.IocContainer.Instance.Resolve<ILoggerFactory>();
                 }
                 else
                 {
@@ -38,40 +53,44 @@ namespace July.Modules
             }
         }
 
-        protected IHostingEnvironment HostingEnvironment
+        protected GlobalSettings Settings => GlobalSettings.Instance;
+
+        protected IHostingEnvironment HostingEnvironment => Settings.HostingEnvironment();
+
+        /// <summary>
+        /// Trigger at first, settings should be configured in this method 
+        /// </summary>
+        public virtual void Initialize()
         {
-            get
-            {
-                if (IocContainer.InstanceAccessable)
-                {
-                    return IocContainer.Instance.Resolve<IHostingEnvironment>();
-                }
-                else
-                {
-                    return StartupService.HostingEnvironment;
-                }
-            }
+
         }
 
-        public virtual void Initialize(IocBuilder builder)
+        /// <summary>
+        /// Trigger after Initialize(), should register own services in this method.
+        /// IocBuilder.RegisterAssemblyByConvention(ThisAssembly) will call by default. To disable this feature, do not call base.ConfigureServices(builder)
+        /// </summary>
+        /// <param name="builder"></param>
+        public virtual void ConfigureServices(IocBuilder builder)
         {
             builder.RegisterAssemblyByConvention(ThisAssembly);
         }
 
-        public virtual void Load(IIocContainer iocContainer)
+        public virtual void Configure(IApplicationBuilder app)
         {
 
         }
 
-        public virtual void Start(IIocContainer iocContainer)
+        public virtual void OnApplicationStart()
         {
 
         }
 
-        public virtual void Shutdown()
+        public virtual void OnApplicationShutdown()
         {
 
         }
+
+        #region Static methods
 
         public static bool IsJulyModule(Type type)
         {
@@ -138,5 +157,7 @@ namespace July.Modules
                 AddModuleAndDependenciesRecursively(modules, dependedModule);
             }
         }
+
+        #endregion
     }
 }

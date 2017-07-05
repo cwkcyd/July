@@ -40,7 +40,7 @@ namespace July.Settings
 
             Set(configuration);
             Set(hostingEnvironment);
-            Set(new IocConventionOptions());
+            Set(IocConventionOptions.Default);
         }
 
         /// <summary>

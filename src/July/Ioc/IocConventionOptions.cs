@@ -11,11 +11,21 @@ namespace July.Ioc
 
         public IocConventionOptions()
         {
-            ConventionRegisters = new List<IConventionRegister>();
+            ConventionRegisters = new List<IConventionRegister>();            
+        }
 
-            ConventionRegisters.Add(new ComponentRegister());
-            ConventionRegisters.Add(new LifetimeEventsRegister());
-            ConventionRegisters.Add(new AspectRegister());
+        internal static IocConventionOptions Default
+        {
+            get
+            {
+                var options = new IocConventionOptions();
+
+                options.ConventionRegisters.Add(new ComponentRegister());
+                options.ConventionRegisters.Add(new LifetimeEventsRegister());
+                options.ConventionRegisters.Add(new AspectRegister());
+
+                return options;
+            }
         }
     }
 }

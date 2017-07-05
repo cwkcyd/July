@@ -7,6 +7,7 @@ using System.Linq;
 using July.Startup;
 using System.Reflection;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Builder;
 
 namespace July.Modules
 {
@@ -36,51 +37,49 @@ namespace July.Modules
             _moduleList = new JulyModuleCollection(StartupModuleType);
 
             LoadAllModules(iocBuilder, startupConfiguration);
-
-            InitializeModules(iocBuilder);
         }
 
-        public void Load(IIocContainer iocContainer)
+        public void ConfigureServices(IocBuilder iocBuilder)
         {
             var sortedModules = _moduleList.GetSortedModuleListByDependency();
 
             foreach (var module in sortedModules)
             {
-                module.Instance.Load(iocContainer);
-                Logger.LogDebug($"Module: {module.Type.AssemblyQualifiedName} loaded");
+                module.Instance.ConfigureServices(iocBuilder);
+                Logger.LogDebug($"Module: {module.Type.AssemblyQualifiedName} configure services completed");
             }
         }
 
-        public void Start(IIocContainer iocContainer)
+        public void Configure(IApplicationBuilder app)
         {
             var sortedModules = _moduleList.GetSortedModuleListByDependency();
 
             foreach (var module in sortedModules)
             {
-                module.Instance.Start(iocContainer);
-                Logger.LogDebug($"Module: {module.Type.AssemblyQualifiedName} started");
+                module.Instance.Configure(app);
+                Logger.LogDebug($"Module: {module.Type.AssemblyQualifiedName} configure completed");
             }
         }
 
-        public void Shutdown()
+        public void OnApplicationStart()
+        {
+            var sortedModules = _moduleList.GetSortedModuleListByDependency();
+
+            foreach (var module in sortedModules)
+            {
+                module.Instance.OnApplicationStart();
+                Logger.LogDebug($"Module: {module.Type.AssemblyQualifiedName} OnApplicationStart");
+            }
+        }
+
+        public void OnApplicationShutdown()
         {
             var sortedModules = _moduleList.GetSortedModuleListByDependency().Reverse<JulyModuleInfo>();
 
             foreach (var module in sortedModules)
             {
-                Logger.LogDebug($"Module: {module.Type.AssemblyQualifiedName} shutdown");
-                module.Instance.Shutdown();
-            }
-        }
-
-        private void InitializeModules(IocBuilder iocBuilder)
-        {
-            var sortedModules = _moduleList.GetSortedModuleListByDependency();
-
-            foreach (var module in sortedModules)
-            {
-                module.Instance.Initialize(iocBuilder);
-                Logger.LogDebug($"Module: {module.Type.AssemblyQualifiedName} initialized");
+                Logger.LogDebug($"Module: {module.Type.AssemblyQualifiedName} OnApplicationShutdown");
+                module.Instance.OnApplicationShutdown();
             }
         }
 

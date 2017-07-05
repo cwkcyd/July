@@ -6,16 +6,22 @@ using System.Threading.Tasks;
 using July.Ioc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Configuration;
 
 namespace July.Sample
 {
     public class SampleModule : JulyModule
     {
-        public override void Initialize(IocBuilder builder)
+        public override void ConfigureServices(IocBuilder builder)
         {
-            base.Initialize(builder);
+            base.ConfigureServices(builder);
 
             builder.AddMvc();
+        }
+
+        public override void OnApplicationStart()
+        {
+            base.OnApplicationStart();
         }
     }
 }

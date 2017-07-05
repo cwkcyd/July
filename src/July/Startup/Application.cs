@@ -26,7 +26,10 @@ namespace July.Startup
         {
             var builder = IocBuilder.New(services, StartupService);
 
-            new JulyModuleManager(StartupModule).Initialize(builder, StartupService);
+            JulyModuleManager manager = new JulyModuleManager(StartupModule);
+            manager.Initialize(builder, StartupService);
+
+            manager.ConfigureServices(builder);
 
             return builder.Build();
         }
@@ -34,13 +37,12 @@ namespace July.Startup
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, IApplicationLifetime applicationLifetime)
         {
             var manager = app.ApplicationServices.GetService<JulyModuleManager>();
-            var iocContainer = app.ApplicationServices.GetService<IIocContainer>();
 
-            manager.Load(iocContainer);
+            manager.Configure(app);
             
             //register application lifetime events
-            applicationLifetime.ApplicationStarted.Register(() => { manager.Start(iocContainer); });
-            applicationLifetime.ApplicationStopping.Register(manager.Shutdown);            
+            applicationLifetime.ApplicationStarted.Register(() => { manager.OnApplicationStart(); });
+            applicationLifetime.ApplicationStopping.Register(manager.OnApplicationShutdown);            
 
             Run(app, env, loggerFactory, applicationLifetime);
         }
