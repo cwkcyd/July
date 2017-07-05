@@ -1,4 +1,5 @@
-﻿using July.Ioc;
+﻿using July.Events;
+using July.Ioc;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -37,6 +38,16 @@ namespace July.Settings
         public static IocConventionOptions IocConventionOptions(this GlobalSettings settings)
         {
             return settings.Get<IocConventionOptions>();
+        }
+
+        /// <summary>
+        /// Retrive the EventBus options
+        /// </summary>
+        /// <param name="settings"></param>
+        /// <returns></returns>
+        public static EventBusOptions EventBus(this GlobalSettings settings)
+        {
+            return settings.Get<EventBusOptions>();
         }
     }
 }

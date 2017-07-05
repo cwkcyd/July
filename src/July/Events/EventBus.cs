@@ -6,6 +6,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Text;
 using System.Reflection;
+using July.Settings;
 
 namespace July.Events
 {
@@ -21,27 +22,24 @@ namespace July.Events
         public EventBus(IIocContainer iocContainer)
         {
             IocContainer = iocContainer;
-            HandlerMapping = new ConcurrentDictionary<Type, List<Type>>();
+            HandlerMapping = GlobalSettings.Instance.EventBus().HandlerMappings;
         }
 
         public void Publish<TEventData>(TEventData eventData)
         {
             if (HandlerMapping.TryGetValue(typeof(TEventData), out var handlers))
             {
-                using (ILifetimeScope scope = IocContainer.BeginLifetimeScope())
+                foreach (var handlerType in handlers)
                 {
-                    foreach (var handlerType in handlers)
+                    IEventHandler<TEventData> handler = (IEventHandler<TEventData>)IocContainer.Resolve(handlerType);
+
+                    if (handler == null)
                     {
-                        IEventHandler<TEventData> handler = (IEventHandler<TEventData>)scope.ResolveOptional(handlerType);
-
-                        if (handler == null)
-                        {
-                            Logger.LogWarning($"Cannot create instance: {handlerType.FullName}, make sure you have registered it in DI");
-                            continue;
-                        }
-
-                        handler.Handle(eventData);
+                        Logger.LogWarning($"Cannot create instance: {handlerType.FullName}, make sure you have registered it in DI");
+                        continue;
                     }
+
+                    handler.Handle(eventData);
                 }
             }
         }
