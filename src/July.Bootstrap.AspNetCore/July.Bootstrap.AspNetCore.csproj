@@ -1,5 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
+  <Import Project="..\..\common.props" />
+
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
@@ -9,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Hosting" version="2.0.0-*" />
+    <PackageReference Include="Microsoft.AspNetCore.Hosting" version="$(DotnetPackageVersion)" />
   </ItemGroup>
 
 </Project>

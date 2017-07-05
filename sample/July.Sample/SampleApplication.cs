@@ -20,7 +20,7 @@ namespace July.Sample
             new Bootstrapper<SampleApplication>(() => WebHost.CreateDefaultBuilder(args)).Run();
         }
 
-        public SampleApplication(IStartupService startupConfiguration) : base(startupConfiguration)
+        public SampleApplication(IStartupService startupService) : base(startupService)
         {
 
         }
