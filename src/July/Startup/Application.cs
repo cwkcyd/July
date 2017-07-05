@@ -42,11 +42,7 @@ namespace July.Startup
             
             //register application lifetime events
             applicationLifetime.ApplicationStarted.Register(() => { manager.OnApplicationStart(); });
-            applicationLifetime.ApplicationStopping.Register(manager.OnApplicationShutdown);            
-
-            Run(app, env, loggerFactory, applicationLifetime);
+            applicationLifetime.ApplicationStopping.Register(manager.OnApplicationShutdown);
         }
-
-        public abstract void Run(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, IApplicationLifetime applicationLifetime);
     }
 }

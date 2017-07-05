@@ -26,15 +26,5 @@ namespace July.Sample
         }
 
         public override Type StartupModule => typeof(SampleModule);
-
-        public override void Run(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, IApplicationLifetime applicationLifetime)
-        {            
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-
-            app.UseMvc();
-        }
     }
 }
