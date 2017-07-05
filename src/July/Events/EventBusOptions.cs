@@ -7,11 +7,11 @@ namespace July.Events
 {
     public class EventBusOptions
     {
-        public ConcurrentDictionary<Type, List<Type>> HandlerMappings { get; set; }
+        public ConcurrentDictionary<Type, List<IEventHandler>> HandlerMappings { get; set; }
 
         public EventBusOptions()
         {
-            HandlerMappings = new ConcurrentDictionary<Type, List<Type>>();
+            HandlerMappings = new ConcurrentDictionary<Type, List<IEventHandler>>();
         }
     }
 }

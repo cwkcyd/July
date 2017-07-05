@@ -1,15 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace July.Events
 {
     public interface IEventBus
     {
-        void Subscribe(Type eventDataType, Type eventHandlerType);
+        IDisposable Subscribe<TEventData, TEventHandler>()
+            where TEventHandler : IEventHandler<TEventData>;
 
-        void Unsubscribe(Type eventDataType, Type eventHandlerType);
+        IDisposable Subscribe<TEventData>(IEventHandler<TEventData> handler);
+
+        IDisposable Subscribe<TEventData>(Action<TEventData> handler);
+
+        void Unsubscribe<TEventData, TEventHandler>()
+            where TEventHandler : IEventHandler<TEventData>;
+
+        void Unsubscribe<TEventData>(IEventHandler<TEventData> handler);
+
+        void Unsubscribe<TEventData>(Action<TEventData> handler);
 
         void Publish<TEvent>(TEvent eventData);
+
+        Task PublishAsync<TEvent>(TEvent eventData);
     }
 }

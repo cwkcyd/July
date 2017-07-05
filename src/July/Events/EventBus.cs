@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Reflection;
 using July.Settings;
+using System.Threading.Tasks;
 
 namespace July.Events
 {
@@ -15,7 +16,7 @@ namespace July.Events
     {
         private IIocContainer IocContainer { get; set; }
 
-        private ConcurrentDictionary<Type, List<Type>> HandlerMapping { get; set; }
+        private ConcurrentDictionary<Type, List<IEventHandler>> HandlerMapping { get; set; }
 
         public ILogger<EventBus> Logger { get; set; }
 
@@ -29,46 +30,56 @@ namespace July.Events
         {
             if (HandlerMapping.TryGetValue(typeof(TEventData), out var handlers))
             {
-                foreach (var handlerType in handlers)
+                foreach (var handler in handlers)
                 {
-                    IEventHandler<TEventData> handler = (IEventHandler<TEventData>)IocContainer.Resolve(handlerType);
-
-                    if (handler == null)
-                    {
-                        Logger.LogWarning($"Cannot create instance: {handlerType.FullName}, make sure you have registered it in DI");
-                        continue;
-                    }
-
-                    handler.Handle(eventData);
+                    IEventHandler<TEventData> eventHandler = (IEventHandler<TEventData>)handler;
+                    eventHandler.Handle(eventData);
                 }
             }
         }
 
-        public void Subscribe(Type eventDataType, Type eventHandlerType)
+        public IDisposable Subscribe<TEventData, TEventHandler>() 
+            where TEventHandler : IEventHandler<TEventData>
         {
-            var correctHandlerType = typeof(IEventHandler<>);
-            correctHandlerType = correctHandlerType.MakeGenericType(eventDataType);
+            var eventHandler = new Internal.IocEventHandler<TEventData, TEventHandler>();
 
-            if (!correctHandlerType.IsAssignableFrom(eventHandlerType))
-            {
-                Logger.LogWarning($"The handler: {eventHandlerType.FullName} cannot handle the event: {eventDataType.FullName} and it will be ignored");
-                return;
-            }
+            Type key = typeof(TEventData);
 
-            lock (HandlerMapping)
-            {
-                var handlers = HandlerMapping.GetOrAdd(eventDataType, new List<Type>());
-                handlers.Add(eventHandlerType);
-            }
+            var handlers = HandlerMapping.GetOrAdd(key, new List<IEventHandler>());
+            handlers.Add(eventHandler);
+
+            return null;
         }
 
-        public void Unsubscribe(Type eventDataType, Type eventHandlerType)
+        public IDisposable Subscribe<TEventData>(IEventHandler<TEventData> handler)
         {
-            lock (HandlerMapping)
-            {
-                var handlers = HandlerMapping.GetOrAdd(eventDataType, new List<Type>());
-                handlers.Remove(eventHandlerType);
-            }
+            throw new NotImplementedException();
+        }
+
+        public IDisposable Subscribe<TEventData>(Action<TEventData> handler)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Unsubscribe<TEventData, TEventHandler>()
+            where TEventHandler : IEventHandler<TEventData>
+        {
+
+        }
+
+        public void Unsubscribe<TEventData>(IEventHandler<TEventData> handler)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Unsubscribe<TEventData>(Action<TEventData> handler)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task PublishAsync<TEvent>(TEvent eventData)
+        {
+            throw new NotImplementedException();
         }
     }
 }
