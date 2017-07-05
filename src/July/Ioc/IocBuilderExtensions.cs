@@ -35,12 +35,6 @@ namespace July.Ioc
                 return;
             }
 
-            var componentAttribute = type.AsType().GetFirstAttribute<ComponentAttribute>();
-            if (componentAttribute == null)
-            {
-                return;
-            }
-
             var registration = iocBuilder.RegisterType(type.AsType());
 
             IocConventionOptions options = GlobalSettings.Instance.IocConventionOptions();
