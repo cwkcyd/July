@@ -16,6 +16,11 @@ namespace July.Ioc.Conventions
         {
             ComponentAttribute attribute = type.GetFirstAttribute<ComponentAttribute>(true);
 
+            if (attribute == null)
+            {
+                return registration;
+            }
+
             if (attribute.AsSelf)
             {
                 registration = registration.As(type);
@@ -36,7 +41,7 @@ namespace July.Ioc.Conventions
 
             if (attribute.Lifetime == ServiceLifetime.Scoped)
             {
-                registration = registration.InstancePerLifetimeScope();
+                registration = registration.InstancePerMatchingLifetimeScope(attribute.MatchingLifetimeScope);
             }
             else if (attribute.Lifetime == ServiceLifetime.Singleton)
             {

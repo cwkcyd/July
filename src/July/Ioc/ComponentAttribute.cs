@@ -18,6 +18,24 @@ namespace July.Ioc
 
         public bool AutoActivate { get; set; } = false;
 
+        private string _matchingLifetimeScope;
+
+        public string MatchingLifetimeScope
+        {
+            get
+            {
+                if (_matchingLifetimeScope == null)
+                {
+                    return Consts.LifetimeScope.ROOT;
+                }
+                return _matchingLifetimeScope;
+            }
+            set
+            {
+                _matchingLifetimeScope = value;
+            }
+        }
+
         public ComponentAttribute(ServiceLifetime lifetime)
         {
             Lifetime = lifetime;
