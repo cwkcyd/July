@@ -52,18 +52,6 @@ namespace July.Ioc
             return LifetimeScope.IsRegistered(type);
         }
 
-        public ILifetimeScope BeginLifetimeScope(Action<ContainerBuilder> builderAction)
-        {
-            if (builderAction != null)
-            {
-                return LifetimeScope.BeginLifetimeScope(builderAction);
-            }
-            else
-            {
-                return LifetimeScope.BeginLifetimeScope();
-            }
-        }
-
         #endregion
     }
 }

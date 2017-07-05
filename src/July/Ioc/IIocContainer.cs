@@ -11,7 +11,5 @@ namespace July.Ioc
         object Resolve(Type type);
 
         bool IsRegistered(Type type);
-
-        ILifetimeScope BeginLifetimeScope(Action<ContainerBuilder> builderAction = null);
     }
 }
