@@ -1,4 +1,5 @@
 ﻿using July.Aspect;
+using July.Events;
 using July.Ioc;
 using System;
 using System.Collections.Generic;
@@ -7,18 +8,16 @@ using System.Threading.Tasks;
 
 namespace July.Sample
 {
-    [Transient]
-    public class TestHandler : IHandler
+    public class TestEventHandler : IEventHandler<TestEventData>
     {
-        public virtual void Test()
+        public void Handle(TestEventData eventData)
         {
 
         }
     }
-    
-    [Intercept(typeof(TestInterceptor))]
-    public interface IHandler
+
+    public class TestEventData : IEventData
     {
-        void Test();
+
     }
 }

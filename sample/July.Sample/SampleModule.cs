@@ -10,6 +10,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Builder;
 using July.Settings;
 using Microsoft.AspNetCore.Hosting;
+using July.Events;
+using Autofac;
 
 namespace July.Sample
 {
@@ -35,6 +37,32 @@ namespace July.Sample
         public override void OnApplicationStart()
         {
             base.OnApplicationStart();
+        }
+    }
+
+    [Transient]
+    public class TestService : IDisposable
+    {
+        private ILifetimeScope _scope;
+
+        public TestService(ILifetimeScope scope)
+        {
+            _scope = scope;
+        }
+
+        public void Dispose()
+        {
+
+        }
+
+        public void Test()
+        {
+            var cs = _scope.BeginLifetimeScope(builder =>
+            {
+                builder.RegisterInstance<object>(new object()).SingleInstance();
+            });
+
+            var ev = cs.Resolve<IEventBus>();
         }
     }
 }
