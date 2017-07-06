@@ -5,6 +5,7 @@ using System.Text;
 namespace July.Events.Internal
 {
     internal class ActionEventHandler<TEventData> : IEventHandler<TEventData>
+        where TEventData : IEventData
     {
         public Action<TEventData> Action { get; private set; }
 

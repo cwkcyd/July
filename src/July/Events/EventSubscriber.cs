@@ -6,6 +6,7 @@ using System.Text;
 namespace July.Events
 {
     public class EventSubscriber<TEventData> : IEventSubscriber
+        where TEventData : IEventData
     {
         public EventSubscriber(IEventBus eventBus, IEventHandler<TEventData> handler)
         {

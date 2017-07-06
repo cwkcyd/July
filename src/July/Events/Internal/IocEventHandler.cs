@@ -7,6 +7,7 @@ using System.Text;
 namespace July.Events.Internal
 {
     internal class IocEventHandler<TEventData>: IEventHandler<TEventData>
+        where TEventData : IEventData
     {
         private ILifetimeScope _lifetimeScope;
 

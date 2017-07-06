@@ -28,6 +28,7 @@ namespace July.Events
         }
 
         public void Publish<TEventData>(TEventData eventData)
+            where TEventData : IEventData
         {
             var handlers = GetEventHandlerList<TEventData>();
             foreach (var handler in handlers)
@@ -38,6 +39,7 @@ namespace July.Events
         }
 
         public IDisposable Subscribe<TEventData, TEventHandler>()
+            where TEventData : IEventData
             where TEventHandler : IEventHandler<TEventData>
         {
             var eventHandler = new Internal.IocEventHandler<TEventData>(LifetimeScope, typeof(TEventHandler));
@@ -48,6 +50,7 @@ namespace July.Events
         }
 
         public IDisposable Subscribe<TEventData>(IEventHandler<TEventData> handler)
+            where TEventData : IEventData
         {
             AddEventHandler<TEventData>(handler);
 
@@ -55,6 +58,7 @@ namespace July.Events
         }
 
         public IDisposable Subscribe<TEventData>(Action<TEventData> handler)
+            where TEventData : IEventData
         {
             var eventHandler = new Internal.ActionEventHandler<TEventData>(handler);
 
@@ -64,6 +68,7 @@ namespace July.Events
         }
 
         public void Unsubscribe<TEventData, TEventHandler>()
+            where TEventData : IEventData
             where TEventHandler : IEventHandler<TEventData>
         {
             GetEventHandlerList<TEventData>().Lock(handlers =>
@@ -75,6 +80,7 @@ namespace July.Events
         }
 
         public void Unsubscribe<TEventData>(IEventHandler<TEventData> handler)
+            where TEventData : IEventData
         {
             GetEventHandlerList<TEventData>().Lock(handlers =>
             {
@@ -85,6 +91,7 @@ namespace July.Events
         }
 
         public void Unsubscribe<TEventData>(Action<TEventData> handler)
+            where TEventData : IEventData
         {
             GetEventHandlerList<TEventData>().Lock(handlers =>
             {
@@ -95,6 +102,7 @@ namespace July.Events
         }
 
         public Task PublishAsync<TEventData>(TEventData eventData)
+            where TEventData : IEventData
         {
             List<Task> tasks = new List<Task>();
             var handlers = GetEventHandlerList<TEventData>();

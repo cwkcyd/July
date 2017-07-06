@@ -8,7 +8,7 @@ namespace July.Events
     {
         public void Dispose()
         {
-            throw new NotImplementedException();
+
         }
     }
 }

@@ -5,6 +5,7 @@ using System.Text;
 namespace July.Events.Internal
 {
     internal class ActionEventHandlerUnsubscriber<TEventData> : IDisposable
+        where TEventData : IEventData
     {
         private IEventBus _eventBus;
 
