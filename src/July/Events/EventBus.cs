@@ -25,6 +25,25 @@ namespace July.Events
         public EventBus(ILifetimeScope lifetimeScope)
         {
             LifetimeScope = lifetimeScope;
+
+            this.Initialize();
+        }
+
+        private void Initialize()
+        {
+            var initialHandlers = GlobalSettings.Instance.EventBus().InitialHandlers;
+
+            var methods = this.GetType().GetMethods()
+                .Where(t => t.Name == nameof(this.Subscribe) && t.GetGenericArguments().Length == 2)
+                .First();
+
+            foreach (var eventDataType in initialHandlers)
+            {
+                foreach (var eventHandlerType in eventDataType.Value)
+                {
+                    methods.MakeGenericMethod(eventDataType.Key, eventHandlerType).Invoke(this, null);
+                }
+            }
         }
 
         public void Publish<TEventData>(TEventData eventData)

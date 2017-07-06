@@ -23,6 +23,7 @@ namespace July.Ioc
                 options.ConventionRegisters.Add(new ComponentRegister());
                 options.ConventionRegisters.Add(new LifetimeEventsRegister());
                 options.ConventionRegisters.Add(new AspectRegister());
+                options.ConventionRegisters.Add(new EventHandlerRegister());
 
                 return options;
             }

@@ -19,18 +19,10 @@ namespace July.Sample.Controllers
         {
             Handler = handler;
 
-            var sub1 = handler.Subscribe<TestEventData, TestEventHandler>();
-            var sub2 = handler.Subscribe<TestEventData>(e =>
-            {
+            var type1 = typeof(IEventHandler<>);
+            var type2 = typeof(TestEventHandler);
 
-            });
-            var sub3 = handler.Subscribe<TestEventData>(new TestEventHandler());
-
-            handler.Publish(new TestEventData());
-
-            sub1.Dispose();
-            sub2.Dispose();
-            sub3.Dispose();
+            bool b = type2.IsAssignableFrom(type1);
         }
 
         [HttpGet("")]

@@ -10,6 +10,11 @@ namespace July.Sample
 {
     public class TestEventHandler : IEventHandler<TestEventData>
     {
+        public TestEventHandler()
+        {
+
+        }
+
         public void Handle(TestEventData eventData)
         {
 
