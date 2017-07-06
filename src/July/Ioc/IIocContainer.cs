@@ -6,10 +6,15 @@ using System.Text;
 
 namespace July.Ioc
 {
-    public interface IIocContainer
+    public interface IIocContainer : IServiceProvider
     {
         object Resolve(Type type);
 
         bool IsRegistered(Type type);
+
+        /// <summary>
+        /// Get the root container
+        /// </summary>
+        IIocContainer CreateScope();
     }
 }

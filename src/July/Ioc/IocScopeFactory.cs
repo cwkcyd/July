@@ -3,18 +3,22 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using July.Ioc.Internal;
+using System.Threading;
 
 namespace July.Ioc
 {
-    internal class AutofacServiceScopeFactory : IServiceScopeFactory
+    internal class IocScopeFactory : IIocScopeFactory
     {
         private readonly ILifetimeScope _lifetimeScope;
 
+        private static long _scopeId = 0;
+
         /// <summary>
-        /// Initializes a new instance of the <see cref="AutofacServiceScopeFactory"/> class.
+        /// Initializes a new instance of the <see cref="IocScopeFactory"/> class.
         /// </summary>
         /// <param name="lifetimeScope">The lifetime scope.</param>
-        public AutofacServiceScopeFactory(ILifetimeScope lifetimeScope)
+        public IocScopeFactory(ILifetimeScope lifetimeScope)
         {
             this._lifetimeScope = lifetimeScope;
         }
@@ -32,7 +36,24 @@ namespace July.Ioc
         /// </returns>
         public IServiceScope CreateScope()
         {
-            return new AutofacServiceScope(this._lifetimeScope.BeginLifetimeScope(Consts.LifetimeScope.REQUEST));
+            return CreateIocContainer().Resolve<IServiceScope>();
+        }
+
+        public IIocContainer CreateIocContainer()
+        {
+            var id = Interlocked.Increment(ref _scopeId);
+
+            return CreateIocContainer(id.ToString());
+        }
+
+        private IIocContainer CreateIocContainer(string tag)
+        {
+            var childScope = _lifetimeScope.BeginLifetimeScope(tag, builder =>
+            {
+                builder.RegisterDefaultServices();
+            });
+
+            return childScope.Resolve<IocContainer>();
         }
     }
 }

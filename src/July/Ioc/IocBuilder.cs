@@ -8,6 +8,7 @@ using July.Startup;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
+using July.Ioc.Internal;
 
 namespace July.Ioc
 {
@@ -92,9 +93,7 @@ namespace July.Ioc
 
         public IServiceProvider Build()
         {
-            this.RegisterType<IocContainer>().AsSelf().As<IIocContainer>().SingleInstance();
-            this.RegisterType<LifetimeServiceProvider>().As<IServiceProvider>().InstancePerLifetimeScope();
-            this.RegisterType<AutofacServiceScopeFactory>().As<IServiceScopeFactory>();
+            this.RegisterDefaultServices();
 
             this.Populate(ServiceCollection);
 

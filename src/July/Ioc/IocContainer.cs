@@ -52,6 +52,19 @@ namespace July.Ioc
             return LifetimeScope.IsRegistered(type);
         }
 
+        public IIocContainer CreateScope()
+        {
+            return LifetimeScope.Resolve<IIocScopeFactory>().CreateIocContainer();
+
+            var childScope = this.LifetimeScope.BeginLifetimeScope();
+            return new IocContainer(childScope);
+        }
+
         #endregion
+
+        public object GetService(Type serviceType)
+        {
+            return LifetimeScope.ResolveOptional(serviceType);
+        }
     }
 }
