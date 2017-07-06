@@ -9,7 +9,7 @@ namespace July.Ioc.Conventions
 {
     public class LifetimeEventsRegister : IConventionRegister
     {
-        public IRegistrationBuilder<TLimit, TActivatorData, TRegistrationStyle> Register<TLimit, TActivatorData, TRegistrationStyle>(IRegistrationBuilder<TLimit, TActivatorData, TRegistrationStyle> registration, Type type)
+        public void Register<TLimit, TActivatorData, TRegistrationStyle>(IRegistrationBuilder<TLimit, TActivatorData, TRegistrationStyle> registration, Type type)
         {
             if (typeof(ILifetimeEvents).IsAssignableFrom(type))
             {
@@ -24,8 +24,6 @@ namespace July.Ioc.Conventions
                     }
                 });
             }
-
-            return registration;
         }
     }
 }

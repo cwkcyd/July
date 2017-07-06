@@ -17,7 +17,7 @@ namespace July.Ioc.Conventions
 {
     public class AspectRegister : IConventionRegister
     {
-        public IRegistrationBuilder<TLimit, TActivatorData, TRegistrationStyle> Register<TLimit, TActivatorData, TRegistrationStyle>(IRegistrationBuilder<TLimit, TActivatorData, TRegistrationStyle> registration, Type type)
+        public void Register<TLimit, TActivatorData, TRegistrationStyle>(IRegistrationBuilder<TLimit, TActivatorData, TRegistrationStyle> registration, Type type)
         {
             var classAttributes = type.GetTypeInfo().GetCustomAttributes<InterceptAttribute>();
             var interfaceAttributes = type.GetInterfaceAttributes<InterceptAttribute>();
@@ -26,16 +26,14 @@ namespace July.Ioc.Conventions
 
             if (allAttributes.Any())
             {
-                registration = EnableClassInterceptors(registration);
+                EnableClassInterceptors(registration);
             }
 
             IEnumerable<Type> interceptBy = allAttributes.SelectMany(t => t.InterceptBy);
             if (interceptBy.Any())
             {
-                registration = InterceptedBy(registration, interceptBy.ToArray());
+                InterceptedBy(registration, interceptBy.ToArray());
             }
-
-            return registration;
         }
 
         private const string InterceptorsPropertyName = "Autofac.Extras.DynamicProxy.RegistrationExtensions.InterceptorsPropertyName";

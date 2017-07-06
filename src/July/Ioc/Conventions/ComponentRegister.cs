@@ -12,47 +12,45 @@ namespace July.Ioc.Conventions
 {
     public class ComponentRegister : IConventionRegister
     {
-        public IRegistrationBuilder<TLimit, TActivatorData, TRegistrationStyle> Register<TLimit, TActivatorData, TRegistrationStyle>(IRegistrationBuilder<TLimit, TActivatorData, TRegistrationStyle> registration, Type type)
+        public void Register<TLimit, TActivatorData, TRegistrationStyle>(IRegistrationBuilder<TLimit, TActivatorData, TRegistrationStyle> registration, Type type)
         {
             ComponentAttribute attribute = type.GetFirstAttribute<ComponentAttribute>(true);
 
             if (attribute == null)
             {
-                return registration;
+                return;
             }
 
             if (attribute.AsSelf)
             {
-                registration = registration.As(type);
+                registration.As(type);
             }
             if (attribute.AsImplementedInterfaces)
             {
                 var interfaceTypes = type.GetInterfaces();
-                registration = registration.As(interfaceTypes);
+                registration.As(interfaceTypes);
             }
             if (attribute.PropertyAutoWired)
             {
-                registration = registration.PropertiesAutowired();
+                registration.PropertiesAutowired();
             }
             if (attribute.AutoActivate)
             {
-                registration = registration.AutoActivate();
+                registration.AutoActivate();
             }
 
             if (attribute.Lifetime == ServiceLifetime.Scoped)
             {
-                registration = registration.InstancePerMatchingLifetimeScope(attribute.MatchingLifetimeScope);
+                registration.InstancePerMatchingLifetimeScope(attribute.MatchingLifetimeScope);
             }
             else if (attribute.Lifetime == ServiceLifetime.Singleton)
             {
-                registration = registration.SingleInstance();
+                registration.SingleInstance();
             }
             else
             {
-                registration = registration.InstancePerDependency();
+                registration.InstancePerDependency();
             }
-
-            return registration;
         }
     }
 }
