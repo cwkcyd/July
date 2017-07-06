@@ -30,7 +30,7 @@ namespace July.Modules
                     throw new InvalidOperationException("Cannot access IocContainer instance. It is available in Configure method and later methods");
                 }
 
-                return Ioc.IocContainer.Instance;
+                return Ioc.IocContainer.Root;
             }
         }
 
@@ -42,7 +42,7 @@ namespace July.Modules
 
                 if (Ioc.IocContainer.InstanceAccessable)
                 {
-                    loggerFactory = Ioc.IocContainer.Instance.Resolve<ILoggerFactory>();
+                    loggerFactory = Ioc.IocContainer.Root.Resolve<ILoggerFactory>();
                 }
                 else
                 {

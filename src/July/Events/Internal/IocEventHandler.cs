@@ -14,7 +14,7 @@ namespace July.Events.Internal
 
         public void Handle(TEventData eventData)
         {
-            IEventHandler<TEventData> handler = IocContainer.Instance.Resolve<TEventHandler>() as IEventHandler<TEventData>;
+            IEventHandler<TEventData> handler = IocContainer.Root.Resolve<TEventHandler>() as IEventHandler<TEventData>;
 
             if (handler == null)
             {

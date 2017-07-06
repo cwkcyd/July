@@ -11,7 +11,7 @@ namespace July.Ioc
     {
         private static IIocContainer _instance;
 
-        public static IIocContainer Instance
+        public static IIocContainer Root
         {
             get
             {
@@ -21,6 +21,17 @@ namespace July.Ioc
                 }
 
                 return _instance;
+            }
+        }
+
+        internal static IocContainer RootInstance
+        {
+            set
+            {
+                if (value.LifetimeScope.Tag != null && value.LifetimeScope.Tag.ToString() == Consts.LifetimeScope.ROOT)
+                {
+                    _instance = value;
+                }
             }
         }
 
@@ -37,7 +48,6 @@ namespace July.Ioc
         public IocContainer(ILifetimeScope lifetimeScope)
         {
             LifetimeScope = lifetimeScope ?? throw new ArgumentNullException(nameof(lifetimeScope));
-            _instance = this;
         }
 
         #region IIocContainer
@@ -55,9 +65,6 @@ namespace July.Ioc
         public IIocContainer CreateScope()
         {
             return LifetimeScope.Resolve<IIocScopeFactory>().CreateIocContainer();
-
-            var childScope = this.LifetimeScope.BeginLifetimeScope();
-            return new IocContainer(childScope);
         }
 
         #endregion

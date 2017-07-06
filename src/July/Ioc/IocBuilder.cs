@@ -93,8 +93,6 @@ namespace July.Ioc
 
         public IServiceProvider Build()
         {
-            this.RegisterDefaultServices();
-
             this.Populate(ServiceCollection);
 
             //Register startup service at last, to prevent user replace them.
@@ -103,9 +101,15 @@ namespace July.Ioc
             this.RegisterInstance(StartupService.LoggerFactory).As<ILoggerFactory>().SingleInstance();
             this.RegisterInstance(StartupService.Configuration).As<IConfiguration>().SingleInstance();
 
+            this.RegisterDefaultServices();
+
             var container = base.Build();
 
-            return container.Resolve<IocContainer>().Resolve<IServiceProvider>();
+            IocContainer iocContainer = container.Resolve<IocContainer>();
+
+            IocContainer.RootInstance = iocContainer;
+
+            return iocContainer;
         }
     }
 }
