@@ -8,78 +8,117 @@ using System.Text;
 using System.Reflection;
 using July.Settings;
 using System.Threading.Tasks;
+using July.Extensions;
+using System.Linq;
 
 namespace July.Events
 {
     [Singleton]
     public class EventBus : IEventBus
     {
-        private IIocContainer IocContainer { get; set; }
+        private ILifetimeScope LifetimeScope { get; set; }
 
-        private ConcurrentDictionary<Type, List<IEventHandler>> HandlerMapping { get; set; }
+        private readonly ConcurrentDictionary<Type, List<IEventHandler>> _handlerMapping = new ConcurrentDictionary<Type, List<IEventHandler>>();
 
         public ILogger<EventBus> Logger { get; set; }
 
-        public EventBus(IIocContainer iocContainer)
+        public EventBus(ILifetimeScope lifetimeScope)
         {
-            IocContainer = iocContainer;
-            HandlerMapping = GlobalSettings.Instance.EventBus().HandlerMappings;
+            LifetimeScope = lifetimeScope;
         }
 
         public void Publish<TEventData>(TEventData eventData)
         {
-            if (HandlerMapping.TryGetValue(typeof(TEventData), out var handlers))
+            var handlers = GetEventHandlerList<TEventData>();
+            foreach (var handler in handlers)
             {
-                foreach (var handler in handlers)
-                {
-                    IEventHandler<TEventData> eventHandler = (IEventHandler<TEventData>)handler;
-                    eventHandler.Handle(eventData);
-                }
+                IEventHandler<TEventData> eventHandler = (IEventHandler<TEventData>)handler;
+                eventHandler.Handle(eventData);
             }
         }
 
-        public IDisposable Subscribe<TEventData, TEventHandler>() 
+        public IDisposable Subscribe<TEventData, TEventHandler>()
             where TEventHandler : IEventHandler<TEventData>
         {
-            var eventHandler = new Internal.IocEventHandler<TEventData, TEventHandler>();
+            var eventHandler = new Internal.IocEventHandler<TEventData>(LifetimeScope, typeof(TEventHandler));
 
-            Type key = typeof(TEventData);
+            AddEventHandler<TEventData>(eventHandler);
 
-            var handlers = HandlerMapping.GetOrAdd(key, new List<IEventHandler>());
-            handlers.Add(eventHandler);
-
-            return null;
+            return new Internal.IocEventHandlerUnsubscriber<TEventData, TEventHandler>(this);
         }
 
         public IDisposable Subscribe<TEventData>(IEventHandler<TEventData> handler)
         {
-            throw new NotImplementedException();
+            AddEventHandler<TEventData>(handler);
+
+            return new Internal.InstanceEventHandlerUnsubscriber<TEventData>(this, handler);
         }
 
         public IDisposable Subscribe<TEventData>(Action<TEventData> handler)
         {
-            throw new NotImplementedException();
+            var eventHandler = new Internal.ActionEventHandler<TEventData>(handler);
+
+            AddEventHandler<TEventData>(eventHandler);
+
+            return new Internal.ActionEventHandlerUnsubscriber<TEventData>(this, handler);
         }
 
         public void Unsubscribe<TEventData, TEventHandler>()
             where TEventHandler : IEventHandler<TEventData>
         {
+            GetEventHandlerList<TEventData>().Lock(handlers =>
+            {
+                handlers.RemoveAll(t => t.CastAndMatch<Internal.IocEventHandler<TEventData>>(handler => handler.EventHandlerType == typeof(TEventHandler)));
 
+                return handlers;
+            });
         }
 
         public void Unsubscribe<TEventData>(IEventHandler<TEventData> handler)
         {
-            throw new NotImplementedException();
+            GetEventHandlerList<TEventData>().Lock(handlers =>
+            {
+                handlers.RemoveAll(t => t == handler);
+
+                return handlers;
+            });
         }
 
         public void Unsubscribe<TEventData>(Action<TEventData> handler)
         {
-            throw new NotImplementedException();
+            GetEventHandlerList<TEventData>().Lock(handlers =>
+            {
+                handlers.RemoveAll(t => t.CastAndMatch<Internal.ActionEventHandler<TEventData>>(h => h.Action == handler));
+
+                return handlers;
+            });
         }
 
-        public Task PublishAsync<TEvent>(TEvent eventData)
+        public Task PublishAsync<TEventData>(TEventData eventData)
         {
-            throw new NotImplementedException();
+            List<Task> tasks = new List<Task>();
+            var handlers = GetEventHandlerList<TEventData>();
+            foreach (var handler in handlers)
+            {
+                IEventHandler<TEventData> eventHandler = (IEventHandler<TEventData>)handler;
+
+                tasks.Add(Task.Factory.StartNew(() => eventHandler.Handle(eventData)));
+            }
+
+            return Task.WhenAll(tasks);
+        }
+
+        private void AddEventHandler<TEventData>(IEventHandler eventHandler)
+        {
+            var handlers = GetEventHandlerList<TEventData>();
+            handlers.Add(eventHandler);
+        }
+
+        private List<IEventHandler> GetEventHandlerList<TEventData>()
+        {
+            Type key = typeof(TEventData);
+
+            return _handlerMapping.GetOrAdd(key, new List<IEventHandler>());
         }
     }
 }

@@ -6,16 +6,16 @@ namespace July.Events.Internal
 {
     internal class ActionEventHandler<TEventData> : IEventHandler<TEventData>
     {
-        private Action<TEventData> _action;
+        public Action<TEventData> Action { get; private set; }
 
         public ActionEventHandler(Action<TEventData> action)
         {
-            _action = action ?? throw new ArgumentNullException(nameof(action));
+            Action = action ?? throw new ArgumentNullException(nameof(action));
         }
 
         public void Handle(TEventData eventData)
         {
-            _action.Invoke(eventData);
+            Action.Invoke(eventData);
         }
     }
 }

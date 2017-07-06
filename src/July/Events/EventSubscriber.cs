@@ -7,9 +7,7 @@ namespace July.Events
 {
     public class EventSubscriber<TEventData> : IEventSubscriber
     {
-        private ConcurrentDictionary<Type, List<IEventHandler>> _handlerMappings;
-
-        public EventSubscriber()
+        public EventSubscriber(IEventBus eventBus, IEventHandler<TEventData> handler)
         {
 
         }

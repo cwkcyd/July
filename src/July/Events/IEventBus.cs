@@ -21,8 +21,8 @@ namespace July.Events
 
         void Unsubscribe<TEventData>(Action<TEventData> handler);
 
-        void Publish<TEvent>(TEvent eventData);
+        void Publish<TEventData>(TEventData eventData);
 
-        Task PublishAsync<TEvent>(TEvent eventData);
+        Task PublishAsync<TEventData>(TEventData eventData);
     }
 }
