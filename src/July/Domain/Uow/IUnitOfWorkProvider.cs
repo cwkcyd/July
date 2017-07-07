@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace July.Modules.EntityFrameworkCore.Uow
+namespace July.Domain.Uow
 {
     public interface IUnitOfWorkProvider
     {
-
+        IUnitOfWork Begin();
     }
 }
