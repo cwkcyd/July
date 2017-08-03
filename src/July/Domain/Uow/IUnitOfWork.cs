@@ -9,13 +9,13 @@ namespace July.Domain.Uow
     {
         string Id { get; }
 
-        int Commit();
+        void Commit();
 
-        Task<int> CommitAsync();
+        Task CommitAsync();
 
         bool IsDisposed { get; }
 
-        IUnitOfWork Outer { get; set; }
+        void Begin(UnitOfWorkOptions options);
 
         event EventHandler Disposed;
     }

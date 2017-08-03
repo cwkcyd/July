@@ -4,8 +4,8 @@ using System.Text;
 
 namespace July.Domain.Uow
 {
-    public interface ICurrentUnitOfWork
+    public interface IUnitOfWorkFactory
     {
-        IUnitOfWork Current { get; set; }
+        IUnitOfWork Create(UnitOfWorkOptions options);
     }
 }

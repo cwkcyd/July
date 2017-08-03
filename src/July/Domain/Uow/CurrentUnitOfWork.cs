@@ -9,18 +9,18 @@ namespace July.Domain.Uow
     [Singleton]
     public class CurrentUnitOfWork : ICurrentUnitOfWork
     {
-        private static readonly AsyncLocal<IUnitOfWork> AsyncLocalUow = new AsyncLocal<IUnitOfWork>();
+        private static readonly AsyncLocal<IUnitOfWork> _local = new AsyncLocal<IUnitOfWork>();
 
-        public IUnitOfWork UnitOfWork
+        public IUnitOfWork Current
         {
             get
             {
-                if (AsyncLocalUow.Value == null)
+                if (_local.Value == null)
                 {
                     return null;
                 }
 
-                var uow = AsyncLocalUow.Value;
+                var uow = _local.Value;
                 if (uow.IsDisposed)
                 {
                     return null;
@@ -30,33 +30,20 @@ namespace July.Domain.Uow
             }
             set
             {
-                lock (AsyncLocalUow)
+                lock (_local)
                 {
                     if (value == null)
                     {
-                        if (AsyncLocalUow.Value == null)
-                        {
-                            return;
-                        }
-
-                        if (AsyncLocalUow.Value?.Outer == null)
-                        {
-                            AsyncLocalUow.Value = null;
-                            return;
-                        }
-
-                        AsyncLocalUow.Value = AsyncLocalUow.Value.Outer;
+                        _local.Value = null;
                     }
                     else
                     {
-                        if (AsyncLocalUow.Value == null)
+                        if (_local.Value != null)
                         {
-                            AsyncLocalUow.Value = value;
-                            return;
+                            throw new InvalidOperationException("A UnitOfWork instance has been created");
                         }
 
-                        value.Outer = AsyncLocalUow.Value;
-                        AsyncLocalUow.Value = value;
+                        _local.Value = value;
                     }
                 }
             }

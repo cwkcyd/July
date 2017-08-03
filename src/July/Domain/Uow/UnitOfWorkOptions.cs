@@ -4,8 +4,8 @@ using System.Text;
 
 namespace July.Domain.Uow
 {
-    public interface IUnitOfWorkProvider
+    public class UnitOfWorkOptions
     {
-        IUnitOfWork Begin();
+        public bool UseTransaction { get; set; }
     }
 }
